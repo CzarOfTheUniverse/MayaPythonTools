@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>269</width>
+    <width>277</width>
     <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>CMiller Attr Transfer</string>
+   <string>COTU Attr Transfer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -172,9 +172,9 @@ Selected Objects</string>
          <string>This will transfer the selected attributes to the selected objects. Selecting multiple objects will create the attributes on all of them.</string>
         </property>
         <property name="text">
-         <string>Connect to
-Channel Box
-Selected Attrs</string>
+         <string>Connect
+Selected Attrs
+In Channel Box</string>
         </property>
        </widget>
       </item>
@@ -193,7 +193,7 @@ Selected Attrs</string>
            <string>This will transfer the selected attributes to the selected objects. Selecting multiple objects will create the attributes on all of them.</string>
           </property>
           <property name="text">
-           <string>Move Attr Up</string>
+           <string>Move CB Attr Up</string>
           </property>
          </widget>
         </item>
@@ -203,7 +203,7 @@ Selected Attrs</string>
            <string>This will transfer the selected attributes to the selected objects. Selecting multiple objects will create the attributes on all of them.</string>
           </property>
           <property name="text">
-           <string>Move Attr Down</string>
+           <string>Move CB Attr Down</string>
           </property>
          </widget>
         </item>

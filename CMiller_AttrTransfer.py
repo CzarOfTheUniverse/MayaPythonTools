@@ -1,4 +1,22 @@
-from maya import OpenMayaUI as omUI, cmds
+"""
+~ Attribute Transfer Tool ~ Christopher M. Miller ~ 2016/07/19
+
+An interface for transferring attributes. Originally written to supplement
+functionality from the defunct AttributeManager script, this tool allows
+the user to manipulate attributes on objects.
+
+Written and maintained by Christopher M. Miller
+
+
+
+
+
+v.1 Initial Release to copy and transfer attributes.
+
+"""
+
+
+from maya import OpenMayaUI as omUI, cmds, mel
 from PySide import QtGui, QtCore, QtUiTools
 from shiboken import wrapInstance
 import sys,os
@@ -7,6 +25,88 @@ sys.path.append(r"R:\Pipeline\Tools\Maya\Scripts\python")
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 myFile = os.path.join(myDir, 'CMiller_AttrTransfer.ui')
+
+
+
+def cmmConnectChannels(source="",dest=[], sourceAttr=""):
+
+    if not source:
+        source = cmds.ls(sl=1)[0]
+    if not dest:
+        dest = cmds.ls(sl=1)[1:]
+
+    channelBox = mel.eval(
+        'global string $gChannelBoxName; $temp=$gChannelBoxName;')  # Get Maya's Main ChannelBox
+
+    for de in dest:
+        attrs = cmds.channelBox(channelBox, q=True, sma=True)
+
+        for at in attrs:
+            if sourceAttr:
+                sAtt = sourceAttr
+            else:
+                sAtt = at
+            cmds.connectAttr("%s.%s" % (source, sAtt), "%s.%s" % (de, at), f=1)
+
+
+def cmmMoveAttrProc(source, at=""):
+
+    bigP = cmds.attributeQuery(at,node=source,lp=1)
+    if bigP:
+        cmds.deleteAttr("%s.%s"%(source,bigP[0]))
+        cmds.undo()
+    else:
+        lStat = cmds.getAttr("%s.%s"%(source,at),l=1)
+        cmds.setAttr("%s.%s"%(source,at),l=0)
+        cmds.deleteAttr("%s.%s"%(source,at))
+        cmds.undo()
+        cmds.setAttr("%s.%s"%(source,at),l=lStat)
+
+def cmmMoveAttr(source, at, up=1):
+    ats = cmds.listAttr(source, ud=1)
+    ind = ats.index(at)
+    if up==1:
+        if ind==0:
+            return
+        else:
+            moveNum = -1
+            for i,at in enumerate(ats):
+                if i==ind+moveNum:
+                    cmmMoveAttrProc(source,at)
+
+            for i,at in enumerate(ats):
+                if i>ind:
+                    cmmMoveAttrProc(source,at)
+
+            #ats = cmds.listAttr(source, ud=1)
+            #ind2 = ats.index(at)
+            #if ind2==ind:
+            #    cmmMoveAttr(source, at, up=1)
+
+
+    else:
+        if ind == len(ats)-1:
+            return
+        else:
+            moveNum = 1
+            for i,at in enumerate(ats):
+                if i==ind:
+                    cmmMoveAttrProc(source,at)
+            for i,at in enumerate(ats):
+                if i>ind+moveNum:
+                    parents  = cmds.attributeQuery(at,node=source,lp=1)
+                    if parents:
+                        cmmMoveAttrProc(source,parents[0])
+                    else:
+                        cmmMoveAttrProc(source,at)
+
+            #ats = cmds.listAttr(source, ud=1)
+            #ind2 = ats.index(at)
+            #if ind2==ind:
+            #    cmmMoveAttr(source, at, up=0)
+
+
+
 
 def cmmTransferAttr(source="",dest=[],delFromSource=0, customAttrs=[]):
 
@@ -50,6 +150,12 @@ def cmmTransferAttr(source="",dest=[],delFromSource=0, customAttrs=[]):
                         elif attrType in ["double","float","long"]:
                             cmds.addAttr(de,ln=ca,at=attrType,k=attrKeyable)
                             cmds.setAttr("%s.%s"%(de,ca),attrVal,l=attrLock)
+                            if cmds.attributeQuery(ca,node=source,mxe=1):
+                                attrMax = cmds.attributeQuery(ca,node=source,max=1)[0]
+                                cmds.addAttr("%s.%s"%(de,ca),e=1,max=attrMax)
+                            if cmds.attributeQuery(ca,node=source,mne=1):
+                                attrMin = cmds.attributeQuery(ca,node=source,min=1)[0]
+                                cmds.addAttr("%s.%s"%(de,ca),e=1,min=attrMin)
                         elif attrType=='string':
                             cmds.addAttr(de,ln=ca,dt="string",k=attrKeyable)
                             if attrVal:
@@ -122,6 +228,10 @@ class CMiller_AttrTransfer(QtGui.QDialog):
         # Connect the elements
         self.UI.newSource_pushButton.clicked.connect(self.loadNewSource)
         self.UI.transferAttrs_pushButton.clicked.connect(self.transferAttrs)
+        self.UI.connectAttrs_pushButton.clicked.connect(self.connectChannels)
+        self.UI.moveUp_pushButton.clicked.connect(self.moveAttrs)
+        self.UI.moveDown_pushButton.clicked.connect(self.moveAttrs)
+
 
         # Show the window
         self.UI.show()
@@ -142,6 +252,22 @@ class CMiller_AttrTransfer(QtGui.QDialog):
         self.UI.type_listWidget.addItems(attrTypes)
 
 
+    def moveAttrs(self):
+
+        sender = self.sender().objectName()
+        print sender
+        s = cmds.ls(sl=1)[0]
+        at = cmds.channelBox("mainChannelBox", q=1, sma=1)[0]
+        if sender=="moveUp_pushButton":
+           cmmMoveAttr(source=s,at=at,up=1)
+        elif sender=="moveDown_pushButton":
+           cmmMoveAttr(source=s,at=at,up=0)
+
+        self.loadNewSource()
+
+    def connectChannels(self):
+
+        cmmConnectChannels()
 
     def transferAttrs(self):
         src = self.UI.curSource_lineEdit.text()
