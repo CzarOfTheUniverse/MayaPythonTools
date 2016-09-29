@@ -42,6 +42,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def resetCTL(self):
         """ Grabs the _CTL controllers and resets them.
+
         :return: None
         """
         ctlSelect = cmds.ls("*_CTL");
@@ -62,6 +63,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmCenterJointOnSel(self, chain=True, name="default"):
         """ Creates a joint at the center of the selections. Can optionally chain together.
+
         :param chain: Whether or not to chain the joints together.
         :param name: The name of the joint(s).
         :return: None
@@ -86,6 +88,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmCreateController(self, name="", type="parent", target=[], guiCtl=False, guiName="default"):
         """ Creates new controller icon with pads on the selected or passed object(s).
+
         :param name: The optional name for the new controller.
         :param type: The constraint type to apply. Valid arguments are ("parent","point","orient").
         :param target: Optional list of targets to create individual controllers on, otherwise uses selection.
@@ -132,6 +135,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def createGimbalPads(self, sel=""):
         """ Creates additional hidden gimbal controllers on existing nodes.
+
         :param sel: Optional list of targets to create gimbal controllers on, otherwise uses selection.
         :return: None
         """
@@ -168,6 +172,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def resetSelected(self):
         """ Simple Translate and Rotate reset.
+
         :return: None
         """
         cmds.ls(sl=1)
@@ -175,6 +180,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def toggleSkinClusters(self):
         """ Simple function to toggle all skinClusters on/off.
+
         :return: None
         """
         self.skinToggle ^= 1
@@ -185,6 +191,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def kaSetMaker(self):
         """ Creates a KeyAll Set.
+
         :return: None
         """
         allSet = cmds.ls('KeyAll', sets=True)
@@ -206,6 +213,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmSplitJoint(self,numSplits=4,chain=True):
         """ Select two joints to split between, or select a single joint to split.
+
         :param numSplits: How many new joints/splits to create.
         :param chain: Whether to chain the joints together or leave them floating.
         :return: None
@@ -251,6 +259,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmCreateJoint(self):
         """ Select components or objects to create joints at.
+
         :return: None
         """
         selList = cmds.ls(os=1)
@@ -262,6 +271,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def connectChannels(self):
         """ Connects two selected objects via highlighted Channel Box attributes.
+
         :return: None
         """
         sel = cmds.ls(sl=1)
@@ -275,6 +285,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmOffsetPad(self, selList=[]):
         """ Creates offset pads above the selected object(s).
+
         :param selList: Optional argument to pass a list of objects, otherwise uses selection.
         :return: List of created top level groups created.
         """
@@ -303,6 +314,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmDrawLine(self):
         """ Draws a visual line between two targets. Useful for poleVectors.
+
         :return: None
         """
         targets = cmds.ls(sl=1)
@@ -319,6 +331,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def colorControls(self, num=0, ctlSel=None):
         """ Colors the selected objects or optionally passed list.
+
         :param num: Sets the color for the controllers. Valid index 0-31.
         :param ctlSel: Optional list to affect, otherwise uses selection.
         :return: None
@@ -332,6 +345,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmFollicleMaker(self, obj=None, uPos=0.5, vPos=0.5):
         """ Create a follicle on the selected object.
+
         :param obj: Optional object to affect, otherwise uses selection.
         :param uPos: The U coordinate to use.
         :param vPos: The V coordinate to use.
@@ -376,6 +390,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def sphereIcon(self, name="Default", size=1):
         """ Creates a simple sphere icon.
+
         :param name: Name of the created object.
         :param size: Scale of the created object.
         :return: The created object.
@@ -397,7 +412,8 @@ class CMiller_RiggingToolsFuncs(object):
         return grp
 
     def cmmFaceCurves(self, cp=5, foff=.4, cb=0, name="UpperLip"):
-        """ *BETA* Face Curves generation.
+        """ *BETA* Face Curves generation. Select an edge to run on.
+
         :param cp: Number of control points to use.
         :param foff: Radius of the falloff.
         :param cb: Whether to lock the weights.
@@ -598,12 +614,13 @@ class CMiller_RiggingToolsFuncs(object):
             cmds.connectAttr("%s.outputGeometry[0]" % node, "%s.inputPolymesh" % inputEdge, f=1)
 
     def cmmCreateBS(self, mesh=None, numShapes=2, connect=True, connectNode=None, newNode=None):
-        """ Generates connected Blendshapes quickly for a selected mesh.
+        """ Generates connected Blendshapes quickly for a selected (skinned/deformed) mesh.
+
         :param mesh: Optional mesh to affect, otherwise uses selection.
         :param numShapes: How many blendshapes to create.
-        :param connect:
-        :param connectNode:
-        :param newNode:
+        :param connect: Whether to connect the new nodes as Blendshapes.
+        :param connectNode: If connecting, the BS node to connect to.
+        :param newNode: If a new BS node should be created.
         :return: The connected node and the transform.
         """
         # grab selected mesh
@@ -646,6 +663,7 @@ class CMiller_RiggingToolsFuncs(object):
     def wingSpanMaker(self):
         """ Select 2 joints. Script will create and weight plane between them and then subdivide for use as an influence object.
         This is minutely slower than a wrap, but allows you to dynamically change the mesh after creation using the polySmooth node.
+
         :return: None
         """
 
@@ -676,6 +694,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def blendShapeWrapCreation(self, target, bsNode):
         """ Creates Blendshape duplicates using wrapped target mesh.
+
         :param target: The mesh to affect with the new blendshapes.
         :param bsNode: The blendshape node to work from.
         :return: None
@@ -697,6 +716,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmIconSaver(self):
         """ Saves custom drawn controller icons to an ICONFILE.
+
         :return: None
         """
         cCurve = (cmds.ls(sl=1)[0])
@@ -753,6 +773,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def cmmIconBuilder(self):
         """ Creates an icon using the ICONFILE.
+
         :return: None
         """
         sender = self.sender().objectName()
@@ -784,6 +805,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def guiSplitJoint(self):
         """ GUI command variant of cmmSplitJoint.
+
         """
         num = self.UI.splitJoints_sb.value()
         chainCheck = self.UI.splitJoints_cb.isChecked()
@@ -791,6 +813,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def guiCenterJointOnSel(self):
         """ GUI command variant of cmmCenterJointOnSel.
+
         """
         jntName = CMiller_RiggingToolsWin.UI.createJoints_txt.text()
         hierVal = CMiller_RiggingToolsWin.UI.createJoints_cb.isChecked()
@@ -800,6 +823,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def guiFollicleMaker(self):
         """ GUI command variant of cmmFollicleMaker.
+
         """
         object = CMiller_RiggingToolsWin.UI.createFollicle_txt.text()
         uVal = CMiller_RiggingToolsWin.UI.createFollicle_uVal.value()
@@ -809,6 +833,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def guiFaceCurves(self):
         """ GUI command variant of cmmFaceCurves.
+
         """
         guiName = CMiller_RiggingToolsWin.UI.faceCurves_txt.text()
         guiVal = CMiller_RiggingToolsWin.UI.faceCurves_val.value()
@@ -818,6 +843,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def guiBSListSel(self):
         """ Gets a list of blendshapes on selected object and adds to the gui.
+
         :return: Blendshape nodes list.
         """
         try:
@@ -837,6 +863,7 @@ class CMiller_RiggingToolsFuncs(object):
 
     def guiCreateBS(self):
         """ GUI command variant of cmmCreateBS.
+
         """
         num = self.UI.createBlendShapes_sb.value()
         selMesh = cmds.ls(sl=1)[0]
@@ -865,6 +892,7 @@ class CMiller_AnimToolsFuncs(object):
 
     def matchPreviousPositionAndKey(self):
         """ Match selection to previous frame's world position and rotation.
+
         :return: None
         """
         curTime = cmds.currentTime(q=1)
@@ -908,9 +936,11 @@ class CMiller_AnimToolsFuncs(object):
 
 class KeyPressEater(QtCore.QObject):
     """ I'm just fixing the stupid QT bugs in Maya where you lose focus with a modifier key.
+
     """
     def eventFilter(self, obj, event):
         """ Override the eventFilter to keep focus on windows by ignoring the first press of certain keys.
+
         """
         if event.type() == QtCore.QEvent.KeyPress:
             # Fitler out Shift, Control, Alt
@@ -924,6 +954,7 @@ class KeyPressEater(QtCore.QObject):
 
 def addFilter(ui):
     """ Push the event filter into the UI.
+
     """
     keyPressEater = KeyPressEater(ui)
     ui.installEventFilter(keyPressEater)
@@ -940,6 +971,7 @@ def getMayaWindow():
 class CMiller_RiggingToolsUI(QtGui.QDialog, CMiller_RiggingToolsFuncs):
     def __init__(self, parent=getMayaWindow()):
         """Initialize the class, load the UI file.
+
         """
         super(CMiller_RiggingToolsUI, self).__init__(parent)
         self.loader = QtUiTools.QUiLoader(self)
@@ -979,6 +1011,7 @@ class CMiller_RiggingToolsUI(QtGui.QDialog, CMiller_RiggingToolsFuncs):
 
     def iconListing(self):
         """ Lists icons in the ICONFILE.
+
         :return: Icons list (if they exist).
         """
         if os.path.exists(myIconFile):
@@ -990,6 +1023,7 @@ class CMiller_RiggingToolsUI(QtGui.QDialog, CMiller_RiggingToolsFuncs):
 
     def skinSaver(self):
         """ Attempts to load the CMiller_skinSaver
+
         :return: None
         """
         try:
@@ -1002,6 +1036,7 @@ class CMiller_RiggingToolsUI(QtGui.QDialog, CMiller_RiggingToolsFuncs):
 
 def run():
     """Run the UI.
+
     """
     global CMiller_RiggingToolsWin
     try:
