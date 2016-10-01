@@ -16,7 +16,6 @@ import getpass, os, os.path, json, sys
 from maya import OpenMayaUI as omUI, cmds
 from PySide import QtGui, QtCore, QtUiTools
 from shiboken import wrapInstance
-import _UITools
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 myFile = os.path.join(myDir, 'CMiller_MafTools.ui')
@@ -404,14 +403,29 @@ class ExImFuncs(object):
 ################################################
 '''
 
+class KeyPressEater(QtCore.QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.KeyPress:
+            # Filter out Shift, Control, Alt
+            if event.key() in [QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Alt, QtCore.Qt.Key_CapsLock,
+                               QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter]:
+                return True
+        else:
+            # Standard event processing
+            return QtCore.QObject.eventFilter(self, obj, event)
+
+
+def addFilter(ui):
+    keyPressEater = KeyPressEater(ui)
+    ui.installEventFilter(keyPressEater)
+
+
 def getMayaWindow():
     """Return Maya main window"""
     ptr = omUI.MQtUtil.mainWindow()
     if ptr is not None:
 
         return wrapInstance(long(ptr), QtGui.QMainWindow)
-
-
 
 class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
     def __init__(self, parent=getMayaWindow()):
@@ -436,7 +450,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         #keyPressEater = KeyPressEater(self)
         #keyPressEater =_UITools.KeyPressEater(self)
         #self.UI.installEventFilter(keyPressEater)
-        _UITools.addFilter(self.UI)
+        addFilter(self.UI)
 
         #QtCore.QObject.installEventFilter()
         #shortcut = QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key.Key_Shift),self.UI.replaceMAFData_lineEdit)
