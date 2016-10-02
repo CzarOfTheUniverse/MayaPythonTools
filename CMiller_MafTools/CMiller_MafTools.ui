@@ -14,7 +14,7 @@
    <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>MAF Tools</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
