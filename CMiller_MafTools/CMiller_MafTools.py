@@ -27,7 +27,7 @@ print myFile
 class ExImFuncs(object):
     def __init__(self):
         cmds.selectPref(tso=1)
-        self.importOnly=True
+        self.importOnly=False
         # Variables
         self.__FullPath__ = cmds.file(q=1, sn=1)
 
@@ -142,7 +142,7 @@ class ExImFuncs(object):
         curSelection = cmds.ls(sl=1)
         for topNode in curSelection:
 
-            savePath, startFrame, endFrame, aeDirPath = self.getFilePath(topNode, variant)
+            savePath, startFrame, endFrame, aeDirPath = self.getSavePath(topNode, variant)
 
             if os.path.exists(savePath):
                 myChoice = cmds.confirmDialog(title='File Exists!!',
@@ -224,7 +224,9 @@ class ExImFuncs(object):
 
     def importAnim(self,animLayer='',murderKeys=False,dataFile=None):
         topNode = cmds.ls(sl=1)[0]
-        savePath, startFrame, endFrame, aeDirPath = self.getFilePath(topNode)
+        startFrame = int(cmds.playbackOptions(q=1, min=1))
+        endFrame = int(cmds.playbackOptions(q=1, max=1))
+        #savePath, startFrame, endFrame, aeDirPath = self.getFilePath(topNode)
         if dataFile:
             initPos = dataFile[0]
             ctlData = dataFile[1]
@@ -283,6 +285,22 @@ class ExImFuncs(object):
             savePath = os.path.basename(ae)
 
         return savePath, startFrame, endFrame, aeDirPath
+
+    def getSavePath(self, obj, variant=""):
+        startFrame = int(cmds.playbackOptions(q=1, min=1))
+        endFrame = int(cmds.playbackOptions(q=1, max=1))
+
+        if self.__FullPath__:
+            baseDir = os.path.dirname(self.__FullPath__)
+            aeDirPath = baseDir+"/animMaf/"
+            if not os.path.isdir(aeDirPath):
+                os.makedirs(aeDirPath)
+
+            savePath = aeDirPath+obj+str(variant)+".animMAF"
+            return savePath, startFrame, endFrame, aeDirPath
+        else:
+            cmds.warning("Please save the scene")
+            raise ValueError
 
     def processStart(self):
         self.topNode = cmds.ls(sl=1)[0]
@@ -557,18 +575,20 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.loadedListPopulate(ctlList)
 
     def dirListing(self):
-        curSel = cmds.ls(sl=1)[0]
+        curSel = cmds.ls(sl=1)
         if curSel:
-            fpReturns = self.ExImFuncs.getFilePath(curSel)
+            fpReturns = self.ExImFuncs.getSavePath(curSel[0])
 
-        if fpReturns[3]:
-            if os.path.exists(fpReturns[3]):
-                dirList = os.listdir(fpReturns[3])
-                self.UI.curDirContents_listWidget.clear()
-                self.UI.curDirContents_listWidget.addItem("-None-")
-                for i in dirList:
-                    if i.endswith(".animMAF"):
-                        self.UI.curDirContents_listWidget.addItem(i)
+            if fpReturns[3]:
+                if os.path.exists(fpReturns[3]):
+                    dirList = os.listdir(fpReturns[3])
+                    self.UI.curDirContents_listWidget.clear()
+                    for i in dirList:
+                        if i.endswith(".animMAF"):
+                            self.UI.curDirContents_listWidget.addItem(i)
+        else:
+            self.UI.curDirContents_listWidget.clear()
+            self.UI.curDirContents_listWidget.addItem("-None-")
 
 def run():
     """Run the UI"""
