@@ -12,7 +12,7 @@ Also houses similar tools for baking final animation for Lighting export
 '''
 
 # Imports
-import getpass, os, os.path, json, sys
+import os, os.path, json, sys
 from maya import OpenMayaUI as omUI, cmds
 from PySide import QtGui, QtCore, QtUiTools
 from shiboken import wrapInstance
@@ -20,22 +20,29 @@ from shiboken import wrapInstance
 myDir = os.path.dirname(os.path.abspath(__file__))
 myFile = os.path.join(myDir, 'CMiller_MafTools.ui')
 
-print myDir
-print myFile
-
 
 class ExImFuncs(object):
     def __init__(self):
         cmds.selectPref(tso=1)
         self.importOnly=False
-        # Variables
         self.__FullPath__ = cmds.file(q=1, sn=1)
 
+    ##########################
+    #
     # Functions
+    #
+    ##########################
 
     def setAnim(self,par='',ctlData={},startFrame=0.0,endFrame=1.0,animLayer=""):
+        """ Applies animation data to a hierarchy of controllers.
 
-
+        :param par: Top level node to start from.
+        :param ctlData: Dictionary containing relevant keyframe data per object and attribute.
+        :param startFrame: Start frame of the animation.
+        :param endFrame: Last frame of the animation.
+        :param animLayer: Optional argument to apply data to an Animation Layer.
+        :return: None
+        """
         parSplit = par.split(":")[-1].split("|")[-1]
 
         print parSplit
@@ -102,7 +109,13 @@ class ExImFuncs(object):
 
 
     def getAnim(self,par='',startFrame=0.0,endFrame=1.0):
+        """ Queries an object for relevant keyframe animation data.
 
+        :param par: Object to query.
+        :param startFrame: Start frame to query animation from.
+        :param endFrame: Last frame to query animation on.
+        :return: Dictionary of the attributes and their values.
+        """
         attrsKeyable = cmds.listAnimatable(par)
         attrDict = {}
         for attr in attrsKeyable:
@@ -129,7 +142,12 @@ class ExImFuncs(object):
         return attrDict
 
     def constraintBake(self,obj,ex='none'):
-        """Valid ex arguments (hierarchy) are: above, below, both, none """
+        """ Bakes down the constraints on an object.
+
+        :param obj: Target object.
+        :param ex: Valid arguments (hierarchy) are 'above', 'below', 'both', 'none'
+        :return: None
+        """
         startFrame = int(cmds.playbackOptions(q=1, min=1))
         endFrame = int(cmds.playbackOptions(q=1, max=1))
         cons = cmds.listConnections(obj,type="constraint",c=1)
@@ -139,6 +157,11 @@ class ExImFuncs(object):
             cmds.delete(conList)
 
     def exportAnim(self, variant=""):
+        """ Exports animation on the selected object(s) to an .animMAF file.
+
+        :param variant: Optional argument for a modified name.
+        :return: Path to the .animMAF file.
+        """
         curSelection = cmds.ls(sl=1)
         for topNode in curSelection:
 
@@ -223,6 +246,13 @@ class ExImFuncs(object):
             return savePath
 
     def importAnim(self,animLayer='',murderKeys=False,dataFile=None):
+        """ Imports animation from an .animMAF file to the selected object.
+
+        :param animLayer: Optional argument for Animation Layer to import on.
+        :param murderKeys: Whether or not to delete pre-existing keyframes.
+        :param dataFile: The .animMAF file to reference.
+        :return: None
+        """
         topNode = cmds.ls(sl=1)[0]
         startFrame = int(cmds.playbackOptions(q=1, min=1))
         endFrame = int(cmds.playbackOptions(q=1, max=1))
@@ -269,29 +299,45 @@ class ExImFuncs(object):
 
 
     def replaceTarget(self,dataFile,old,new):
-        """Replaces data object"""
+        """ Replaces object name/target in .animMAF file.
+
+        :param dataFile: The .animMAF file to reference.
+        :param old: Original object name to replace.
+        :param new: New object name to replace with.
+        :return: The modified .animMAF file and the control list from it.
+        """
         dataFile[new] = dataFile.pop(old)
         ctlList = dataFile.keys()
         ctlList.sort()
         return dataFile, ctlList
 
     def getSavePath(self, obj, variant=""):
+        """ Attempt to find the save path to an .animMAF file for the currently selected object.
+
+        :param obj: Object to find/create a save path for.
+        :param variant: Optional argument for a modified name.
+        :return: Path to the .animMaf file, first frame, last frame, base directory || None.
+        """
         startFrame = int(cmds.playbackOptions(q=1, min=1))
         endFrame = int(cmds.playbackOptions(q=1, max=1))
-
+        usr = os.getenv('USERNAME')
         if self.__FullPath__:
             baseDir = os.path.dirname(self.__FullPath__)
             aeDirPath = baseDir+"/animMaf/"
             if not os.path.isdir(aeDirPath):
                 os.makedirs(aeDirPath)
 
-            savePath = aeDirPath+obj+str(variant)+".animMAF"
+            savePath = "%s%s_%s_%s.animMAF"%(aeDirPath,obj,str(variant),usr)
             return savePath, startFrame, endFrame, aeDirPath
         else:
             cmds.warning("Please save the scene to set a working directory")
             return None
 
     def processStart(self):
+        """ Function for working with and baking out rigid objects.
+
+        :return: None
+        """
         self.topNode = cmds.ls(sl=1)[0]
         self.startFrame = int(cmds.playbackOptions(q=1, min=1))
         self.endFrame = int(cmds.playbackOptions(q=1, max=1))
@@ -302,6 +348,11 @@ class ExImFuncs(object):
             self.exportBakedDataToFile(self.topNode)
 
     def checkRigid(self, topNode):
+        """ Determines if an object is a rigid prop (does not have a skinCluster).
+
+        :param topNode: Object to check.
+        :return: True or False.
+        """
         pNode = cmds.listRelatives(topNode, p=1)[0]
         if pNode.split(":")[-1] == "Model":
             # We need to check where the constraint driver is
@@ -337,12 +388,19 @@ class ExImFuncs(object):
                 return False
 
     def bakeObjectsAction(self, obj):
+        """ Bakes down the animation of an object.
+
+        :param obj: Object to bake keyframes on.
+        :return: Number of baked channels.
+        """
         numBaked = cmds.bakeResults(obj, simulation=1, t=(self.startFrame, self.endFrame), hi="below", sb=1, dic=1, sac=0,
                                     pok=1, ral=0, bol=0, mr=1, cp=0, s=1)
         print (str(numBaked) + " channels baked")
         return numBaked
 
     def exportBakedDataToFile(self, topNode, variant=""):
+        """ **UNDER CONSTRUCTION**
+        """
         pass
         # range star to end
         # make dict
@@ -376,6 +434,8 @@ class ExImFuncs(object):
 
 
     def bakeOutWorldData(self):
+        """ **UNDER CONSTRUCTION**
+        """
         pass
         bakeList = []
         conList = []
@@ -411,7 +471,11 @@ class ExImFuncs(object):
 '''
 
 class KeyPressEater(QtCore.QObject):
+    """ I'm just fixing the stupid QT bugs in Maya where you lose focus with a modifier key.
+    """
     def eventFilter(self, obj, event):
+        """ Override the eventFilter to keep focus on windows by ignoring the first press of certain keys.
+        """
         if event.type() == QtCore.QEvent.KeyPress:
             # Filter out Shift, Control, Alt
             if event.key() in [QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Alt, QtCore.Qt.Key_CapsLock,
@@ -423,12 +487,15 @@ class KeyPressEater(QtCore.QObject):
 
 
 def addFilter(ui):
+    """ Push the event filter into the UI.
+    """
     keyPressEater = KeyPressEater(ui)
     ui.installEventFilter(keyPressEater)
 
 
 def getMayaWindow():
-    """Return Maya main window"""
+    """ Return Maya's main window.
+    """
     ptr = omUI.MQtUtil.mainWindow()
     if ptr is not None:
 
@@ -436,7 +503,8 @@ def getMayaWindow():
 
 class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
     def __init__(self, parent=getMayaWindow()):
-        """Initialize the class, load the UI file"""
+        """Initialize the class, load the UI file.
+        """
         self.loadedData=None
         self.dataFile=None
 
@@ -445,7 +513,6 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.dataFile=None
         self.loadedInit=None
 
-        #super(cmmAnimExportToolUI, self).keyPressEvent()
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.loader = QtUiTools.QUiLoader(self)
         self.UI = self.loader.load(myFile, self)
@@ -454,14 +521,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
 
         self.ExImFuncs = ExImFuncs()
 
-        #keyPressEater = KeyPressEater(self)
-        #keyPressEater =_UITools.KeyPressEater(self)
-        #self.UI.installEventFilter(keyPressEater)
         addFilter(self.UI)
-
-        #QtCore.QObject.installEventFilter()
-        #shortcut = QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key.Key_Shift),self.UI.replaceMAFData_lineEdit)
-        #shortcut.activated.connect(self.skipIt)
 
         # Connect the elements
         self.UI.curDirContents_pushButton.clicked.connect(self.dirListing)
@@ -491,6 +551,9 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.UI.show()
 
     def exportButtonAction(self):
+        """ GUI command variant of exportAnim.
+
+        """
         var = self.UI.fileAppend_lineEdit.text()
         #world = self.UI.worldSpaceBake_checkBox.isChecked()
         fp = self.ExImFuncs.exportAnim(var)
@@ -500,6 +563,9 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
 
 
     def importButtonAction(self):
+        """ GUI command variant of importAnim.
+
+        """
         animLayer = self.UI.targetAnimLayer_lineEdit.text()#get this val from UI
         delKeys = self.UI.deleteAnim_checkBox.isChecked()
         if self.loadedData:
@@ -514,6 +580,10 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
             self.ExImFuncs.importAnim(animLayer,delKeys)
 
     def loadButtonAction(self):
+        """ Load an .animMAF file into the UI.
+
+        :return: None
+        """
         savePath = cmds.fileDialog2(ds=2, fm=1, ff='MAF Files (*.animMAF)')[0]
         with open(savePath, 'r') as file:
             data = json.load(file)
@@ -536,6 +606,9 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.UI.saveMAFData_pushButton.setEnabled(True)
 
     def saveButtonAction(self):
+        """ GUI command hook for saveNewMAF.
+
+        """
         savePath = cmds.fileDialog2(ds=2, fm=1, ff='MAF Files (*.animMAF)')[0]
         newMasterDict = {}
         topNode = cmds.ls(sl=1)[0]
@@ -548,14 +621,26 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
 
 
     def saveNewMAF(self,dataFile,data):
+        """ Saves/Overwrites an .animMAF file.
+
+        :param dataFile: The .animMaf file to save to.
+        :param data: The data to save into the specified file.
+        """
         with open(dataFile, 'w') as file:
             data = json.dump(data, file)
 
     def loadedListPopulate(self,ctlList):
+        """ Adds the passed controller list into the UI.
+
+        :param ctlList: List of controllers to display.
+        """
         self.UI.loadedMAF_listWidget.clear()
         self.UI.loadedMAF_listWidget.addItems(ctlList)
 
     def replaceButtonAction(self):
+        """ Runs functions to modify the loaded .animMAF file.
+
+        """
         oldObj = self.UI.loadedMAF_listWidget.currentItem().text()
         newObj = self.UI.replaceMAFData_lineEdit.text()
         newData, ctlList = self.ExImFuncs.replaceTarget(self.loadedData,oldObj,newObj)
@@ -564,6 +649,9 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.loadedListPopulate(ctlList)
 
     def dirListing(self):
+        """ Lists all .animMAF files for the current scene in the UI.
+
+        """
         fpReturns = self.ExImFuncs.getSavePath("None")
         if fpReturns:
             if os.path.exists(fpReturns[3]):
@@ -577,7 +665,9 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
                 self.UI.curDirContents_listWidget.addItem("-None-")
 
 def run():
-    """Run the UI"""
+    """ Run the UI.
+
+    """
     global cmmAnimExportToolWin
     try:
         cmmAnimExportToolWin.close()

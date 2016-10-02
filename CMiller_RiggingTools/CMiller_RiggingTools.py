@@ -962,6 +962,7 @@ def addFilter(ui):
 
 def getMayaWindow():
     """ Return Maya's main window.
+
     """
     ptr = omUI.MQtUtil.mainWindow()
     if ptr is not None:
@@ -1035,7 +1036,7 @@ class CMiller_RiggingToolsUI(QtGui.QDialog, CMiller_RiggingToolsFuncs):
 
 
 def run():
-    """Run the UI.
+    """ Run the UI.
 
     """
     global CMiller_RiggingToolsWin
