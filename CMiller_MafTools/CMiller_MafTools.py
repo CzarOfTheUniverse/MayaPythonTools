@@ -27,7 +27,7 @@ print myFile
 class ExImFuncs(object):
     def __init__(self):
         cmds.selectPref(tso=1)
-        self.importOnly=False
+        self.importOnly=True
         # Variables
         self.__FullPath__ = cmds.file(q=1, sn=1)
 
