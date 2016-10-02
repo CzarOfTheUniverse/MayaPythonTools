@@ -472,9 +472,11 @@ class ExImFuncs(object):
 
 class KeyPressEater(QtCore.QObject):
     """ I'm just fixing the stupid QT bugs in Maya where you lose focus with a modifier key.
+
     """
     def eventFilter(self, obj, event):
         """ Override the eventFilter to keep focus on windows by ignoring the first press of certain keys.
+
         """
         if event.type() == QtCore.QEvent.KeyPress:
             # Filter out Shift, Control, Alt
@@ -488,6 +490,7 @@ class KeyPressEater(QtCore.QObject):
 
 def addFilter(ui):
     """ Push the event filter into the UI.
+
     """
     keyPressEater = KeyPressEater(ui)
     ui.installEventFilter(keyPressEater)
@@ -495,6 +498,7 @@ def addFilter(ui):
 
 def getMayaWindow():
     """ Return Maya's main window.
+
     """
     ptr = omUI.MQtUtil.mainWindow()
     if ptr is not None:
@@ -504,6 +508,7 @@ def getMayaWindow():
 class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
     def __init__(self, parent=getMayaWindow()):
         """Initialize the class, load the UI file.
+
         """
         self.loadedData=None
         self.dataFile=None
@@ -608,6 +613,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
     def saveButtonAction(self):
         """ GUI command hook for saveNewMAF.
 
+        :return: None
         """
         savePath = cmds.fileDialog2(ds=2, fm=1, ff='MAF Files (*.animMAF)')[0]
         newMasterDict = {}
@@ -625,6 +631,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
 
         :param dataFile: The .animMaf file to save to.
         :param data: The data to save into the specified file.
+        :return: None
         """
         with open(dataFile, 'w') as file:
             data = json.dump(data, file)
@@ -633,6 +640,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         """ Adds the passed controller list into the UI.
 
         :param ctlList: List of controllers to display.
+        :return: None
         """
         self.UI.loadedMAF_listWidget.clear()
         self.UI.loadedMAF_listWidget.addItems(ctlList)
@@ -640,6 +648,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
     def replaceButtonAction(self):
         """ Runs functions to modify the loaded .animMAF file.
 
+        :return: None
         """
         oldObj = self.UI.loadedMAF_listWidget.currentItem().text()
         newObj = self.UI.replaceMAFData_lineEdit.text()
@@ -651,6 +660,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
     def dirListing(self):
         """ Lists all .animMAF files for the current scene in the UI.
 
+        :return: None
         """
         fpReturns = self.ExImFuncs.getSavePath("None")
         if fpReturns:

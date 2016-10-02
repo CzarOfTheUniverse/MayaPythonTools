@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5217c2d3-5dcd-4fd8-83bf-b393a551bede" name="Default" comment="" />
+    <list default="true" id="5217c2d3-5dcd-4fd8-83bf-b393a551bede" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMiller_MafTools/CMiller_MafTools.py" afterPath="$PROJECT_DIR$/CMiller_MafTools/CMiller_MafTools.py" />
+    </list>
     <ignored path="MayaPythonTools.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,9 +39,11 @@
       <file leaf-file-name="CMiller_MafTools.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMiller_MafTools/CMiller_MafTools.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6785317">
-              <caret line="575" column="57" selection-start-line="575" selection-start-column="57" selection-end-line="575" selection-end-column="57" />
-              <folding />
+            <state vertical-scroll-proportion="-2.6088362">
+              <caret line="495" column="40" selection-start-line="495" selection-start-column="40" selection-end-line="495" selection-end-column="40" />
+              <folding>
+                <element signature="e#241#270#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -47,7 +52,7 @@
         <entry file="file://$PROJECT_DIR$/CMiller_RiggingTools/CMiller_RiggingTools.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="957" column="7" selection-start-line="957" selection-start-column="7" selection-end-line="957" selection-end-column="7" />
+              <caret line="950" column="39" selection-start-line="950" selection-start-column="39" selection-end-line="950" selection-end-column="39" />
               <folding>
                 <element signature="e#250#296#0" expanded="true" />
               </folding>
@@ -77,6 +82,7 @@
       <list>
         <option value="$PROJECT_DIR$/CMiller_RiggingTools.py" />
         <option value="$PROJECT_DIR$/CMiller_SkinUI/CMiller_skinSaver.py" />
+        <option value="$PROJECT_DIR$/CMiller_RiggingTools/CMiller_RiggingTools.py" />
         <option value="$PROJECT_DIR$/CMiller_MafTools/CMiller_MafTools.py" />
       </list>
     </option>
@@ -367,14 +373,20 @@
       <option name="project" value="LOCAL" />
       <updated>1475439522122</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Slight formatting changes in DOC strings">
+      <created>1475445861901</created>
+      <option name="number" value="00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1475445861901</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1696" height="1066" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2857143" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17738095" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
@@ -412,23 +424,16 @@
     <MESSAGE value="Import only enabled, need to change defaults work for exporting (pipeline bound currently)" />
     <MESSAGE value="Re-enabled export, wrote a new function to handle queries. Former function were based on Pipeline dependencies. Has a bug in the Update Directory to fix, but should be pretty simple." />
     <MESSAGE value="Update directory listing fixed, based on scene name now. Next commit will comment all code." />
-    <option name="LAST_COMMIT_MESSAGE" value="Update directory listing fixed, based on scene name now. Next commit will comment all code." />
+    <MESSAGE value="Slight formatting changes in DOC strings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Slight formatting changes in DOC strings" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/CMiller_AttrTransfer/CMiller_AttrTransfer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="225" column="8" selection-start-line="225" selection-start-column="8" selection-end-line="225" selection-end-column="26" />
-          <folding>
-            <element signature="e#376#422#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/CMiller_SkinUI/CMiller_skinSaver.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -439,10 +444,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/CMiller_AttrTransfer/CMiller_AttrTransfer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="225" column="8" selection-start-line="225" selection-start-column="8" selection-end-line="225" selection-end-column="26" />
+          <folding>
+            <element signature="e#376#422#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMiller_RiggingTools/CMiller_RiggingTools.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="957" column="7" selection-start-line="957" selection-start-column="7" selection-end-line="957" selection-end-column="7" />
+          <caret line="950" column="39" selection-start-line="950" selection-start-column="39" selection-end-line="950" selection-end-column="39" />
           <folding>
             <element signature="e#250#296#0" expanded="true" />
           </folding>
@@ -451,9 +466,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CMiller_MafTools/CMiller_MafTools.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6785317">
-          <caret line="575" column="57" selection-start-line="575" selection-start-column="57" selection-end-line="575" selection-end-column="57" />
-          <folding />
+        <state vertical-scroll-proportion="-2.6088362">
+          <caret line="495" column="40" selection-start-line="495" selection-start-column="40" selection-end-line="495" selection-end-column="40" />
+          <folding>
+            <element signature="e#241#270#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
