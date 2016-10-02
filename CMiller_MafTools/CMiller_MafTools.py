@@ -275,17 +275,6 @@ class ExImFuncs(object):
         ctlList.sort()
         return dataFile, ctlList
 
-
-    def getFilePath(self, obj, variant=""):
-        startFrame = int(cmds.playbackOptions(q=1, min=1))
-        endFrame = int(cmds.playbackOptions(q=1, max=1))
-        ae = cmds.fileDialog2(cap="Please choose a .animMAF file",fm=0,okc="Load",dir=cmds.file(q=1,sn=1),ff=".animMAF (*.animMAF)")
-        if ae:
-            aeDirPath = os.path.dirname(ae)
-            savePath = os.path.basename(ae)
-
-        return savePath, startFrame, endFrame, aeDirPath
-
     def getSavePath(self, obj, variant=""):
         startFrame = int(cmds.playbackOptions(q=1, min=1))
         endFrame = int(cmds.playbackOptions(q=1, max=1))
@@ -299,8 +288,8 @@ class ExImFuncs(object):
             savePath = aeDirPath+obj+str(variant)+".animMAF"
             return savePath, startFrame, endFrame, aeDirPath
         else:
-            cmds.warning("Please save the scene")
-            raise ValueError
+            cmds.warning("Please save the scene to set a working directory")
+            return None
 
     def processStart(self):
         self.topNode = cmds.ls(sl=1)[0]
@@ -575,20 +564,17 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.loadedListPopulate(ctlList)
 
     def dirListing(self):
-        curSel = cmds.ls(sl=1)
-        if curSel:
-            fpReturns = self.ExImFuncs.getSavePath(curSel[0])
-
-            if fpReturns[3]:
-                if os.path.exists(fpReturns[3]):
-                    dirList = os.listdir(fpReturns[3])
-                    self.UI.curDirContents_listWidget.clear()
-                    for i in dirList:
-                        if i.endswith(".animMAF"):
-                            self.UI.curDirContents_listWidget.addItem(i)
-        else:
-            self.UI.curDirContents_listWidget.clear()
-            self.UI.curDirContents_listWidget.addItem("-None-")
+        fpReturns = self.ExImFuncs.getSavePath("None")
+        if fpReturns:
+            if os.path.exists(fpReturns[3]):
+                dirList = os.listdir(fpReturns[3])
+                self.UI.curDirContents_listWidget.clear()
+                for i in dirList:
+                    if i.endswith(".animMAF"):
+                        self.UI.curDirContents_listWidget.addItem(i)
+            else:
+                self.UI.curDirContents_listWidget.clear()
+                self.UI.curDirContents_listWidget.addItem("-None-")
 
 def run():
     """Run the UI"""
