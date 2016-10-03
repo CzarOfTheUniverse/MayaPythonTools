@@ -21,7 +21,7 @@ myFile = os.path.join(myDir, 'CMiller_SkinUI.ui')
 def getNodeShape(node=''):
     if not node:
         node = cmds.ls(sl=1)[0]
-        #print node
+        # print node
     # transform selected
     if cmds.nodeType(node) == 'transform':
         shape = cmds.listRelatives(node, s=1)
@@ -64,7 +64,9 @@ class SkinCluster(object):
                 raise RuntimeError('Vert count mismatch: %d != %d' % (curVtxs, readVtxs))
 
         shape = getNodeShape(mesh)
-        if cmds.listConnections([x for x in cmds.listHistory(shape,f=1) if cmds.nodeType(x) not in ['blendShape','set','objectSet','shadingEngine','hyperLayout']], t="skinCluster"):
+        if cmds.listConnections([x for x in cmds.listHistory(shape, f=1) if
+                                 cmds.nodeType(x) not in ['blendShape', 'set', 'objectSet', 'shadingEngine',
+                                                          'hyperLayout']], t="skinCluster"):
             print "found skin"
             skinCluster = SkinCluster(mesh)
         else:
@@ -131,7 +133,6 @@ class SkinCluster(object):
         if not self.skinCluster:
             raise ValueError('No skin connected to %s' % shape)
 
-
         # API skin cluster grab
         selList = om.MSelectionList()
         selList.add(self.skinCluster)
@@ -157,7 +158,7 @@ class SkinCluster(object):
 
         for attr in ['skinningMethod', 'normalizeWeights']:
             self.data[attr] = cmds.getAttr('%s.%s' % (self.skinCluster, attr))
-        #print self.data
+            # print self.data
 
     def __getGeoComponents(self):
         mfnSet = om.MFnSet(self.mfnSkin.deformerSet())
@@ -208,7 +209,7 @@ class SkinCluster(object):
         with open(savePath, 'wb') as file:
             json.dump(self.data, file)
         print 'Exported skinCluster (%d influences, %d verts) %s' % (
-        len(self.data['weights'].keys()), len(self.data['blendWeights']), savePath)
+            len(self.data['weights'].keys()), len(self.data['blendWeights']), savePath)
 
     def refreshNamespaceUI(self):
         nsList = cmds.namespaceInfo(lon=1) + ["*Empty*"]
@@ -253,6 +254,11 @@ class SkinCluster(object):
             geomIter.next()
 
     def setData(self, data):
+        """
+
+        :param data:
+        :return: None
+        """
         dgPath, components = self.__getGeoComponents()
         self.data = data
 
@@ -266,6 +272,12 @@ class SkinCluster(object):
             cmds.setAttr('%s.%s' % (self.skinCluster, attr), self.data[attr])
 
     def setInfWeights(self, dgPath, components):
+        """ Sets the weights for an influence.
+
+        :param dgPath: DAG Path
+        :param components:
+        :return: None
+        """
         wgts = self.__getCurrentWeights(dgPath, components)
 
         infPaths = om.MDagPathArray()
@@ -287,7 +299,7 @@ class SkinCluster(object):
                         wgts.set(importedWgts[j], j * numInfs + i)
                     break
             else:
-                #raise ValueError('Mismatched joint names')
+                # raise ValueError('Mismatched joint names')
 
                 progress = (round(((i / infPaths.length()) * 100), 2))
 
@@ -313,7 +325,12 @@ class SkinCluster(object):
         self.mfnSkin.setBlendWeights(dgPath, components, blendWgts)
 
     def setWorldWeights(self, data, threshold):
+        """ Applies the skin weights based on vertex coordinate position.
 
+        :param data: Data to read the weights from.
+        :param threshold: Tolerance level for how far away vertices can be.
+        :return: None
+        """
         dgPath, components = self.__getGeoComponents()
 
         self.data = data
@@ -332,7 +349,7 @@ class SkinCluster(object):
         for x in range(inIntArray.length()):
             inIntArray.set(x, x)
 
-        #wgts = om.MDoubleArray(numInfs)
+        # wgts = om.MDoubleArray(numInfs)
         wgts = self.__getCurrentWeights(dgPath, components)
 
         pos = []
@@ -351,7 +368,7 @@ class SkinCluster(object):
             print 0.00
 
         unmatchedList = []
-        counter=0
+        counter = 0
         for i in range(maxCount):
             comp = geomIter.currentItem()
 
@@ -366,18 +383,18 @@ class SkinCluster(object):
                 wList = json.loads(self.data['worldSpace'][str(pos)])
                 # print "%s matches %s"%(pos, pList)
                 for ll in range(numInfs):
-                    wgts.set(wList[ll], ll+counter)
+                    wgts.set(wList[ll], ll + counter)
 
-                    #self.mfnSkin.setWeights(dgPath, comp, inIntArray, wgts, False)
+                    # self.mfnSkin.setWeights(dgPath, comp, inIntArray, wgts, False)
                 matched = True
 
-                #del self.data['worldSpace'][str(pos)]
+                # del self.data['worldSpace'][str(pos)]
             if matched == False and threshold > 0.0:
                 for x, p in enumerate(importedLoc):
                     pList = json.loads(p)
                     tPos = [jj for ii, jj in enumerate(pList) if (pos[ii] + threshold) > jj > (pos[ii] - threshold)]
 
-                    #So the idea here is to parse the dictionary, iterate over the keys/values, compare the positions within the threshold
+                    # So the idea here is to parse the dictionary, iterate over the keys/values, compare the positions within the threshold
 
 
                     if len(tPos) == 3:
@@ -427,9 +444,9 @@ class SkinCluster(object):
                 win.progression(progress)
             except:
                 print progress
-            counter+=numInfs
+            counter += numInfs
             geomIter.next()
-        #print dgPath, geomIter, inIntArray, wgts
+        # print dgPath, geomIter, inIntArray, wgts
         self.mfnSkin.setWeights(dgPath, components, inIntArray, wgts, False)
         # self.mfnSkin.setWeights(dgPath, components, inIntArray, wgts, False)
 
@@ -439,7 +456,7 @@ class SkinCluster(object):
         for i in unmatchedList:
             cmds.select("%s.vtx[%d]" % (self.mesh, i), add=1)
         print "No match for %d vertices." % len(unmatchedList)
-        if len(unmatchedList)>1:
+        if len(unmatchedList) > 1:
             print "Applying automatic weighting to set."
             mel.eval("SmoothSkinWeights;")
             # cmds.select(d=1)
@@ -452,8 +469,7 @@ class SkinCluster(object):
             cmds.setAttr(self.skinCluster + '.nw', 1)
 
     def mirrorSkinWeights(self, axis='x', side='L'):
-
-        """
+        """ ** UNDER DEVELOPMENT **
         Steps:
 
         1. Find positions and values of "side"
@@ -574,7 +590,9 @@ class SkinCluster(object):
 
 
 def getMayaWindow():
-    """Return Maya main window"""
+    """ Return Maya's main window.
+
+    """
     ptr = omUI.MQtUtil.mainWindow()
     if ptr is not None:
         return wrapInstance(long(ptr), QtGui.QMainWindow)
@@ -582,7 +600,9 @@ def getMayaWindow():
 
 class designerUI(QtGui.QDialog, SkinCluster):
     def __init__(self, parent=getMayaWindow()):
-        """Initialize the class, load the UI file"""
+        """Initialize the class, load the UI file.
+
+        """
         super(designerUI, self).__init__(parent)
         self.loader = QtUiTools.QUiLoader(self)
         self.UI = self.loader.load(myFile, self)
@@ -600,24 +620,34 @@ class designerUI(QtGui.QDialog, SkinCluster):
         self.UI.show()
 
     def saveWeights(self):
-        """Saves the skin weights"""
+        """Saves the skin weights.
+
+        """
         self.export()
 
     def loadWeights(self):
-        """Loads the local space skin weights"""
+        """Loads the local space skin weights.
+
+        """
         self.skinImport()
 
     def loadWorldWeights(self):
-        """Loads the world space skin weights"""
+        """Loads the world space skin weights.
+
+        """
         self.skinImport(world=1)
 
     def progression(self, progress):
-        """Runs a progress bar update"""
+        """Runs a progress bar update.
+
+        """
         self.UI.percentage_pcn.setValue(progress)
 
 
 def run():
-    """Run the UI"""
+    """Run the UI.
+
+    """
     global win
     try:
         win.close()

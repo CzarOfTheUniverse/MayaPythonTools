@@ -23,7 +23,6 @@ class CMiller_RiggingToolsFuncs(object):
     def __init__(self):
         cmds.selectPref(tso=1)
 
-
     ##########################
     #
     # Variables
@@ -32,7 +31,6 @@ class CMiller_RiggingToolsFuncs(object):
 
     skinToggle = 1
     controlSuffix = "_CTL"
-
 
     ##########################
     #
@@ -169,7 +167,6 @@ class CMiller_RiggingToolsFuncs(object):
                 for gimbalCtlShape in gimbalCtlShapes:
                     cmds.connectAttr("%s.showGimbal" % ctl, "%s.visibility" % gimbalCtlShape)
 
-
     def resetSelected(self):
         """ Simple Translate and Rotate reset.
 
@@ -211,7 +208,7 @@ class CMiller_RiggingToolsFuncs(object):
                 cmds.sets(objects, add=targetSet)
                 print "KeyAll Set Made"
 
-    def cmmSplitJoint(self,numSplits=4,chain=True):
+    def cmmSplitJoint(self, numSplits=4, chain=True):
         """ Select two joints to split between, or select a single joint to split.
 
         :param numSplits: How many new joints/splits to create.
@@ -220,16 +217,16 @@ class CMiller_RiggingToolsFuncs(object):
         """
         curSelection = cmds.ls(sl=1)
 
-        if len(curSelection)==1:
+        if len(curSelection) == 1:
             baseJoint = curSelection[0]
-            children = cmds.listRelatives(baseJoint,c=1,type="joint")
-            if len(children)==1:
+            children = cmds.listRelatives(baseJoint, c=1, type="joint")
+            if len(children) == 1:
                 endJoint = children[0]
-            elif len(children)>1:
-                #select child?
+            elif len(children) > 1:
+                # select child?
                 cmds.warning("There are too many children, please select Start and End joints")
                 return
-        elif len(curSelection)==2:
+        elif len(curSelection) == 2:
             baseJoint = curSelection[0]
             endJoint = curSelection[1]
 
@@ -240,22 +237,21 @@ class CMiller_RiggingToolsFuncs(object):
         j1Loc = cmds.xform(baseJoint, q=1, t=1, ws=1, a=1)
         j2Loc = cmds.xform(endJoint, q=1, t=1, ws=1, a=1)
 
-        iterAmt = [(y - x)/(numSplits+1) for x, y in zip(j1Loc, j2Loc)]
+        iterAmt = [(y - x) / (numSplits + 1) for x, y in zip(j1Loc, j2Loc)]
 
         cmds.select(d=1)
         cmds.select(baseJoint)
 
         for i in xrange(numSplits):
-            iterLoc = [x*(i+1) for x in iterAmt]
+            iterLoc = [x * (i + 1) for x in iterAmt]
             newPos = [x + y for x, y in zip(j1Loc, iterLoc)]
             nj = cmds.joint(a=1, p=(newPos))
             if not chain:
                 cmds.select(d=1)
                 cmds.select(baseJoint)
 
-        if cmds.listRelatives(endJoint,p=1,type="joint")[0] == baseJoint:
+        if cmds.listRelatives(endJoint, p=1, type="joint")[0] == baseJoint:
             cmds.parent(endJoint, nj)
-
 
     def cmmCreateJoint(self):
         """ Select components or objects to create joints at.
@@ -432,7 +428,8 @@ class CMiller_RiggingToolsFuncs(object):
         ridesrf = cmds.extrude(crv, ch=1, rn=1, po=0, et=0, upn=1, length=0.1, rotation=0, scale=1, dl=3,
                                n="%s_Ride_SURF" % name)[0]
         srf = \
-        cmds.extrude(crv, ch=1, rn=1, po=0, et=0, upn=1, length=0.1, rotation=0, scale=1, dl=3, n="%s_SURF" % name)[0]
+            cmds.extrude(crv, ch=1, rn=1, po=0, et=0, upn=1, length=0.1, rotation=0, scale=1, dl=3, n="%s_SURF" % name)[
+                0]
         cmds.delete(srf, ch=1)
 
         clstrList = []
@@ -480,7 +477,6 @@ class CMiller_RiggingToolsFuncs(object):
             clstrJntList.append(clstrJnt)
             clstrJntPadList.append(clstrJntPad)
             # cmds.makeIdentity(pad,t=1,r=1,s=1,a=1,n=0,pn=1)
-
 
         # 2. Create blend mesh
         if not cmds.ls("%s_Face_Driver_Mesh" % selMeshName):
@@ -553,7 +549,6 @@ class CMiller_RiggingToolsFuncs(object):
             ctlsGrp = cmds.ls("%s_Face_BS_Controls" % selMeshName)[0]
             cmds.parent(ctlPadGrp, ctlsGrp)
         cmds.setAttr("%s.visibility" % bsJg, 0)
-
 
         # 6. follicle the controls
         folGrp = cmds.group(em=1, n="%s_Follicles" % name, w=1)
@@ -647,17 +642,16 @@ class CMiller_RiggingToolsFuncs(object):
             if connect == True:
                 print connectNode
 
-
                 if connectNode:
                     ind = len(cmds.blendShape(connectNode, q=1, t=1))
                     cmds.blendShape(connectNode, e=1, t=(mesh, ind, transform, 1.0), w=[ind, 1.0], foc=1)
-                    #return connectNode, transform
+                    # return connectNode, transform
                 elif newNode:
                     connectNode = cmds.blendShape(transform, mesh, n=newNode, w=[i, 1.0], foc=1)
-                    #return connectNode, transform
+                    # return connectNode, transform
                 else:
                     cmds.warning("No connection available.")
-                    #pass
+                    # pass
         return connectNode, transform
 
     def wingSpanMaker(self):
@@ -691,7 +685,6 @@ class CMiller_RiggingToolsFuncs(object):
 
         cmds.polySmooth(pplane, dv=2)
 
-
     def blendShapeWrapCreation(self, target, bsNode):
         """ Creates Blendshape duplicates using wrapped target mesh.
 
@@ -705,7 +698,6 @@ class CMiller_RiggingToolsFuncs(object):
             if i > 5:
                 cmds.blendShape(bsNode, e=1, w=[(i - 1, 0), (i, 1)])
                 cmds.duplicate(target, n=nameList[i])
-
 
     ##########################
     #
@@ -809,7 +801,7 @@ class CMiller_RiggingToolsFuncs(object):
         """
         num = self.UI.splitJoints_sb.value()
         chainCheck = self.UI.splitJoints_cb.isChecked()
-        self.cmmSplitJoint(numSplits=num,chain=chainCheck)
+        self.cmmSplitJoint(numSplits=num, chain=chainCheck)
 
     def guiCenterJointOnSel(self):
         """ GUI command variant of cmmCenterJointOnSel.
@@ -871,10 +863,9 @@ class CMiller_RiggingToolsFuncs(object):
         connectNode = self.UI.createBlendShapes_enum.currentText()
         newNode = self.UI.createBlendShapesNew_txt.text()
 
-
-        if connectNode=="**New**":
+        if connectNode == "**New**":
             if not newNode:
-                newNode="%s_BS"%selMesh
+                newNode = "%s_BS" % selMesh
             self.cmmCreateBS(mesh=selMesh, numShapes=num, newNode=newNode)
         elif newNode:
             self.cmmCreateBS(mesh=selMesh, numShapes=num, newNode=newNode)
@@ -882,8 +873,6 @@ class CMiller_RiggingToolsFuncs(object):
             self.cmmCreateBS(mesh=selMesh, numShapes=num, connectNode=connectNode)
 
         BSNodes = self.guiBSListSel()
-
-
 
 
 class CMiller_AnimToolsFuncs(object):
@@ -938,6 +927,7 @@ class KeyPressEater(QtCore.QObject):
     """ I'm just fixing the stupid QT bugs in Maya where you lose focus with a modifier key.
 
     """
+
     def eventFilter(self, obj, event):
         """ Override the eventFilter to keep focus on windows by ignoring the first press of certain keys.
 
@@ -1004,7 +994,7 @@ class CMiller_RiggingToolsUI(QtGui.QDialog, CMiller_RiggingToolsFuncs):
         # self.UI.loadWorld_btn.clicked.connect(self.loadWorldWeights)
         self.UI.createBlendShapesRefresh_btn.clicked.connect(self.guiBSListSel)
         self.UI.wingSpanMaker_btn.clicked.connect(self.wingSpanMaker)
-        #self.UI.connectToCog_btn.clicked.connect(self.fbConnectBsToCog)
+        # self.UI.connectToCog_btn.clicked.connect(self.fbConnectBsToCog)
 
 
         # Show the window

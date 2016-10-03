@@ -24,7 +24,7 @@ myFile = os.path.join(myDir, 'CMiller_MafTools.ui')
 class ExImFuncs(object):
     def __init__(self):
         cmds.selectPref(tso=1)
-        self.importOnly=False
+        self.importOnly = False
         self.__FullPath__ = cmds.file(q=1, sn=1)
 
     ##########################
@@ -33,7 +33,7 @@ class ExImFuncs(object):
     #
     ##########################
 
-    def setAnim(self,par='',ctlData={},startFrame=0.0,endFrame=1.0,animLayer=""):
+    def setAnim(self, par='', ctlData={}, startFrame=0.0, endFrame=1.0, animLayer=""):
         """ Applies animation data to a hierarchy of controllers.
 
         :param par: Top level node to start from.
@@ -47,15 +47,15 @@ class ExImFuncs(object):
 
         print parSplit
         if parSplit in ctlData.keys():
-            print "par found: "+parSplit
+            print "par found: " + parSplit
             attrs = ctlData[parSplit]
             for attr in attrs.keys():
                 shortAttr = attr.split('.')[-1]
-                fullAttr = par+"."+shortAttr
+                fullAttr = par + "." + shortAttr
 
                 if animLayer:
-                    cmds.select(par,r=1)
-                    cmds.animLayer(animLayer,e=1,aso=1)
+                    cmds.select(par, r=1)
+                    cmds.animLayer(animLayer, e=1, aso=1)
                     cmds.select(cl=1)
                 tD = attrs[attr][0]
                 vD = attrs[attr][1]
@@ -69,46 +69,48 @@ class ExImFuncs(object):
                 inWeightD = attrs[attr][9]
                 outWeightD = attrs[attr][10]
 
-                if cmds.attributeQuery(shortAttr,node=par,ex=1):
+                if cmds.attributeQuery(shortAttr, node=par, ex=1):
                     for ii in xrange(len(tD['time'])):
 
                         if startFrame <= tD['time'][ii] <= endFrame:
                             if animLayer:
-                                cmds.setKeyframe(par, t=tD['time'][ii], v=float(vD['value'][ii]), at=shortAttr, al=animLayer, breakdown=False, hierarchy='none', controlPoints=False, shape=False)
+                                cmds.setKeyframe(par, t=tD['time'][ii], v=float(vD['value'][ii]), at=shortAttr,
+                                                 al=animLayer, breakdown=False, hierarchy='none', controlPoints=False,
+                                                 shape=False)
                             else:
 
-                                cmds.setKeyframe(par, t=tD['time'][ii], v=float(vD['value'][ii]), at=shortAttr, breakdown=False, hierarchy='none', controlPoints=False, shape=False)
+                                cmds.setKeyframe(par, t=tD['time'][ii], v=float(vD['value'][ii]), at=shortAttr,
+                                                 breakdown=False, hierarchy='none', controlPoints=False, shape=False)
 
                     if weightedTanD:
                         try:
-                            cmds.keyTangent(par, e=1,wt=int(weightedTanD['weightedTan'][0]),at=shortAttr)
+                            cmds.keyTangent(par, e=1, wt=int(weightedTanD['weightedTan'][0]), at=shortAttr)
                         except:
                             pass
 
                         for ii in xrange(len(tD['time'])):
                             if startFrame <= tD['time'][ii] <= endFrame:
                                 try:
-                                    cmds.keyTangent(par+"."+shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),
+                                    cmds.keyTangent(par + "." + shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),
                                                     ia=inAngleD['inAngle'][ii], iw=inWeightD['inWeight'][ii],
                                                     oa=outAngleD['outAngle'][ii], ow=outWeightD['outWeight'][ii])
 
-                                    cmds.keyTangent(par+"."+shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),itt=inTanD['inTan'][ii], ott=outTanD['outTan'][ii])
+                                    cmds.keyTangent(par + "." + shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),
+                                                    itt=inTanD['inTan'][ii], ott=outTanD['outTan'][ii])
 
-
-                                    cmds.keyTangent(par+"."+shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),lock=lockTanD['lockTan'][ii])
-
+                                    cmds.keyTangent(par + "." + shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),
+                                                    lock=lockTanD['lockTan'][ii])
 
                                     if weightedTanD['weightedTan'][0]:
-                                        cmds.keyTangent(par+"."+shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),lock=weightLockD['weightLock'][ii])
+                                        cmds.keyTangent(par + "." + shortAttr, e=1, t=(tD['time'][ii], tD['time'][ii]),
+                                                        lock=weightLockD['weightLock'][ii])
 
                                 except:
-                                    print "tangent wtf at "+parSplit+"."+shortAttr
+                                    print "tangent wtf at " + parSplit + "." + shortAttr
 
-            print "done with "+parSplit
+            print "done with " + parSplit
 
-
-
-    def getAnim(self,par='',startFrame=0.0,endFrame=1.0):
+    def getAnim(self, par='', startFrame=0.0, endFrame=1.0):
         """ Queries an object for relevant keyframe animation data.
 
         :param par: Object to query.
@@ -141,7 +143,7 @@ class ExImFuncs(object):
                                    {'inWeight': inWeight}, {'outWeight': outWeight}]
         return attrDict
 
-    def constraintBake(self,obj,ex='none'):
+    def constraintBake(self, obj, ex='none'):
         """ Bakes down the constraints on an object.
 
         :param obj: Target object.
@@ -150,9 +152,9 @@ class ExImFuncs(object):
         """
         startFrame = int(cmds.playbackOptions(q=1, min=1))
         endFrame = int(cmds.playbackOptions(q=1, max=1))
-        cons = cmds.listConnections(obj,type="constraint",c=1)
+        cons = cmds.listConnections(obj, type="constraint", c=1)
         if cons:
-            cmds.bakeResults(cons[0::2],t=(startFrame,endFrame),sm=1,hi=ex)
+            cmds.bakeResults(cons[0::2], t=(startFrame, endFrame), sm=1, hi=ex)
             conList = list(set(cons[1::2]))
             cmds.delete(conList)
 
@@ -174,7 +176,8 @@ class ExImFuncs(object):
                                               dismissString='No')
                 if myChoice == 'No':
                     sys.exit(0)
-            cmds.warning('Currently Writing Out Frames %d to %d for object %s. You have not crashed.' % (startFrame, endFrame, topNode))
+            cmds.warning('Currently Writing Out Frames %d to %d for object %s. You have not crashed.' % (
+            startFrame, endFrame, topNode))
             cmds.refresh()
 
             masterDict = {}
@@ -186,16 +189,15 @@ class ExImFuncs(object):
             initPos = initT + initR + initS
 
             parList = cmds.listRelatives(topNode, ad=1, f=1, type="transform")
-            #parList = list(set([cmds.listRelatives(i,f=1,p=1)[0] for i in hi]))
+            # parList = list(set([cmds.listRelatives(i,f=1,p=1)[0] for i in hi]))
             for par in parList:
                 self.constraintBake(par)
-                #off = cmds.listRelatives(par,p=1)[0]
+                # off = cmds.listRelatives(par,p=1)[0]
                 shortPar = par.split(':')[-1].split('|')[-1]
 
-                #shortOff = off.split(':')[-1].split('|')[-1]
-                if shortPar=='MASTER_CONTROL':
-                    if initT==[(0.0, 0.0, 0.0)]:
-
+                # shortOff = off.split(':')[-1].split('|')[-1]
+                if shortPar == 'MASTER_CONTROL':
+                    if initT == [(0.0, 0.0, 0.0)]:
                         initT = cmds.getAttr(par + ".t", t=startFrame)
                         initR = cmds.getAttr(par + ".r", t=startFrame)
                         initS = cmds.getAttr(par + ".s", t=startFrame)
@@ -203,14 +205,12 @@ class ExImFuncs(object):
                         initPos = initT + initR + initS
 
                 elif "tranRot_CTL" in shortPar:
-                    if initT==[(0.0, 0.0, 0.0)]:
-
+                    if initT == [(0.0, 0.0, 0.0)]:
                         initT = cmds.getAttr(par + ".t", t=startFrame)
                         initR = cmds.getAttr(par + ".r", t=startFrame)
                         initS = cmds.getAttr(par + ".s", t=startFrame)
 
                         initPos = initT + initR + initS
-
 
                 '''
                 So somewhere in here, I need to check if the offset is constrained, and bake it if so.
@@ -222,7 +222,7 @@ class ExImFuncs(object):
                 if numKeys > 0:
                     # animated
                     print shortPar
-                    shortParAttrDict = self.getAnim(par,startFrame,endFrame)
+                    shortParAttrDict = self.getAnim(par, startFrame, endFrame)
                     ctlDict[shortPar] = shortParAttrDict
 
                 '''
@@ -245,7 +245,7 @@ class ExImFuncs(object):
             print(savePath)
             return savePath
 
-    def importAnim(self,animLayer='',murderKeys=False,dataFile=None):
+    def importAnim(self, animLayer='', murderKeys=False, dataFile=None):
         """ Imports animation from an .animMAF file to the selected object.
 
         :param animLayer: Optional argument for Animation Layer to import on.
@@ -256,7 +256,7 @@ class ExImFuncs(object):
         topNode = cmds.ls(sl=1)[0]
         startFrame = int(cmds.playbackOptions(q=1, min=1))
         endFrame = int(cmds.playbackOptions(q=1, max=1))
-        #savePath, startFrame, endFrame, aeDirPath = self.getFilePath(topNode)
+        # savePath, startFrame, endFrame, aeDirPath = self.getFilePath(topNode)
         if dataFile:
             initPos = dataFile[0]
             ctlData = dataFile[1]
@@ -272,13 +272,12 @@ class ExImFuncs(object):
                 initPos = data[data.keys()[1]]
                 ctlData = data[data.keys()[0]]
 
-
         parList = cmds.listRelatives(cmds.ls(sl=1)[0], ad=1, f=1, type="transform")
-        #parList = list(set([cmds.listRelatives(i,f=1,p=1)[0] for i in hi]))
+        # parList = list(set([cmds.listRelatives(i,f=1,p=1)[0] for i in hi]))
         for par in parList:
             shortPar = par.split(':')[-1]
 
-            if shortPar=='MASTER_CONTROL':
+            if shortPar == 'MASTER_CONTROL':
                 cmds.setAttr(par + '.t', initPos[0][0], initPos[0][1], initPos[0][2])
                 cmds.setAttr(par + '.r', initPos[1][0], initPos[1][1], initPos[1][2])
                 cmds.setAttr(par + '.s', initPos[2][0], initPos[2][1], initPos[2][2])
@@ -287,18 +286,17 @@ class ExImFuncs(object):
                 cmds.setAttr(par + '.r', initPos[1][0], initPos[1][1], initPos[1][2])
                 cmds.setAttr(par + '.s', initPos[2][0], initPos[2][1], initPos[2][2])
 
-            #off = cmds.listRelatives(par,p=1)[0]
+            # off = cmds.listRelatives(par,p=1)[0]
 
             if murderKeys:
-                cmds.cutKey( par, time=(startFrame,endFrame), cl=1, option="keys")
-                #cmds.cutKey( off, time=(startFrame,endFrame), cl=1, option="keys")
+                cmds.cutKey(par, time=(startFrame, endFrame), cl=1, option="keys")
+                # cmds.cutKey( off, time=(startFrame,endFrame), cl=1, option="keys")
 
-            self.setAnim(par,ctlData,startFrame,endFrame,animLayer)
-            #self.setAnim(off,ctlData,startFrame,endFrame,animLayer)
+            self.setAnim(par, ctlData, startFrame, endFrame, animLayer)
+            # self.setAnim(off,ctlData,startFrame,endFrame,animLayer)
         print "IMPORT COMPLETE!"
 
-
-    def replaceTarget(self,dataFile,old,new):
+    def replaceTarget(self, dataFile, old, new):
         """ Replaces object name/target in .animMAF file.
 
         :param dataFile: The .animMAF file to reference.
@@ -323,11 +321,11 @@ class ExImFuncs(object):
         usr = os.getenv('USERNAME')
         if self.__FullPath__:
             baseDir = os.path.dirname(self.__FullPath__)
-            aeDirPath = baseDir+"/animMaf/"
+            aeDirPath = baseDir + "/animMaf/"
             if not os.path.isdir(aeDirPath):
                 os.makedirs(aeDirPath)
 
-            savePath = "%s%s_%s_%s.animMAF"%(aeDirPath,obj,str(variant),usr)
+            savePath = "%s%s_%s_%s.animMAF" % (aeDirPath, obj, str(variant), usr)
             return savePath, startFrame, endFrame, aeDirPath
         else:
             cmds.warning("Please save the scene to set a working directory")
@@ -357,7 +355,7 @@ class ExImFuncs(object):
         if pNode.split(":")[-1] == "Model":
             # We need to check where the constraint driver is
             kids = cmds.listRelatives(pNode, c=1)
-            ctl=""
+            ctl = ""
             for kid in kids:
                 if "parentConstraint" in kid:
                     modelCon = kid
@@ -393,7 +391,8 @@ class ExImFuncs(object):
         :param obj: Object to bake keyframes on.
         :return: Number of baked channels.
         """
-        numBaked = cmds.bakeResults(obj, simulation=1, t=(self.startFrame, self.endFrame), hi="below", sb=1, dic=1, sac=0,
+        numBaked = cmds.bakeResults(obj, simulation=1, t=(self.startFrame, self.endFrame), hi="below", sb=1, dic=1,
+                                    sac=0,
                                     pok=1, ral=0, bol=0, mr=1, cp=0, s=1)
         print (str(numBaked) + " channels baked")
         return numBaked
@@ -409,19 +408,16 @@ class ExImFuncs(object):
 
         savePath, startFrame, endFrame, aeDirPath = self.getFilePath(topNode, variant)
 
-
         initT = cmds.getAttr(topNode + ".t")
         initR = cmds.getAttr(topNode + ".r")
         initS = cmds.getAttr(topNode + ".s")
         initPos = initT + initR + initS
         # add to dict with key time
         hi = cmds.listRelatives(topNode, ad=1, f=1)
-        parList = list(set([cmds.listRelatives(i,f=1,p=1)[0] for i in hi]))
+        parList = list(set([cmds.listRelatives(i, f=1, p=1)[0] for i in hi]))
         for par in parList:
-
-            shortParAttrDict = self.getAnim(par,startFrame,endFrame)
+            shortParAttrDict = self.getAnim(par, startFrame, endFrame)
             ctlDict[par] = shortParAttrDict
-
 
         masterDict[topNode] = ctlDict
         masterDict['_init'] = initPos
@@ -431,8 +427,6 @@ class ExImFuncs(object):
         print(savePath)
         return savePath
 
-
-
     def bakeOutWorldData(self):
         """ **UNDER CONSTRUCTION**
         """
@@ -441,14 +435,13 @@ class ExImFuncs(object):
         conList = []
 
         for par in parList:
-
-            ctl = cmds.circle(n="%s" %(par.split("|")[-1].split(":")[-1]))[0]
-            pCon = cmds.parentConstraint(par,ctl,mo=0)[0]
+            ctl = cmds.circle(n="%s" % (par.split("|")[-1].split(":")[-1]))[0]
+            pCon = cmds.parentConstraint(par, ctl, mo=0)[0]
             bakeList.append(ctl)
             conList.append(pCon)
 
         print "Ready to bake"
-        cmds.bakeResults(bakeList, t=(startFrame,endFrame))
+        cmds.bakeResults(bakeList, t=(startFrame, endFrame))
         return bakeList
         print "finished bake"
         # parent to world
@@ -470,10 +463,12 @@ class ExImFuncs(object):
 ################################################
 '''
 
+
 class KeyPressEater(QtCore.QObject):
     """ I'm just fixing the stupid QT bugs in Maya where you lose focus with a modifier key.
 
     """
+
     def eventFilter(self, obj, event):
         """ Override the eventFilter to keep focus on windows by ignoring the first press of certain keys.
 
@@ -502,21 +497,21 @@ def getMayaWindow():
     """
     ptr = omUI.MQtUtil.mainWindow()
     if ptr is not None:
-
         return wrapInstance(long(ptr), QtGui.QMainWindow)
+
 
 class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
     def __init__(self, parent=getMayaWindow()):
         """Initialize the class, load the UI file.
 
         """
-        self.loadedData=None
-        self.dataFile=None
+        self.loadedData = None
+        self.dataFile = None
 
         super(cmmAnimExportToolUI, self).__init__(parent)
-        self.loadedData=None
-        self.dataFile=None
-        self.loadedInit=None
+        self.loadedData = None
+        self.dataFile = None
+        self.loadedInit = None
 
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.loader = QtUiTools.QUiLoader(self)
@@ -533,17 +528,17 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.UI.exportAnim_pushButton.clicked.connect(self.exportButtonAction)
         self.UI.importAnim_pushButton.clicked.connect(self.importButtonAction)
 
-        #self.keyPressEvent(self.UI.keyPressEvent)
+        # self.keyPressEvent(self.UI.keyPressEvent)
 
         self.UI.loadMAFData_pushButton.clicked.connect(self.loadButtonAction)
         self.UI.replaceMAFData_pushButton.clicked.connect(self.replaceButtonAction)
         self.UI.saveMAFData_pushButton.clicked.connect(self.saveButtonAction)
 
-        if self.ExImFuncs.importOnly==True:
+        if self.ExImFuncs.importOnly == True:
             self.UI.exportTab.setEnabled(False)
 
         print(self.UI.keyPressEvent)
-        #self.UI.keyPressEvent(self.keyPressEvent())
+        # self.UI.keyPressEvent(self.keyPressEvent())
         '''
         self.UI.curDirContents_listWidget.clicked.connect(self.saveWeights)
         self.UI.loadReg_btn.clicked.connect(self.loadWeights)
@@ -560,29 +555,28 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
 
         """
         var = self.UI.fileAppend_lineEdit.text()
-        #world = self.UI.worldSpaceBake_checkBox.isChecked()
+        # world = self.UI.worldSpaceBake_checkBox.isChecked()
         fp = self.ExImFuncs.exportAnim(var)
 
         if fp:
-            self.UI.outputPath_label.setText('<a href="%s">%s</a>'%(str("/".join(fp.split('/')[:-1])),str(fp)))
-
+            self.UI.outputPath_label.setText('<a href="%s">%s</a>' % (str("/".join(fp.split('/')[:-1])), str(fp)))
 
     def importButtonAction(self):
         """ GUI command variant of importAnim.
 
         """
-        animLayer = self.UI.targetAnimLayer_lineEdit.text()#get this val from UI
+        animLayer = self.UI.targetAnimLayer_lineEdit.text()  # get this val from UI
         delKeys = self.UI.deleteAnim_checkBox.isChecked()
         if self.loadedData:
-            self.ExImFuncs.importAnim(animLayer,delKeys,[self.loadedInit,self.loadedData])
-            self.loadedData=None
-            self.dataFile=None
-            self.loadedInit=None
+            self.ExImFuncs.importAnim(animLayer, delKeys, [self.loadedInit, self.loadedData])
+            self.loadedData = None
+            self.dataFile = None
+            self.loadedInit = None
             self.UI.loadedMAF_listWidget.clear()
             self.UI.saveMAFData_pushButton.setEnabled(False)
 
         else:
-            self.ExImFuncs.importAnim(animLayer,delKeys)
+            self.ExImFuncs.importAnim(animLayer, delKeys)
 
     def loadButtonAction(self):
         """ Load an .animMAF file into the UI.
@@ -607,7 +601,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         self.loadedInit = initPos
         self.dataFile = data
 
-        #enable save BUTTON
+        # enable save BUTTON
         self.UI.saveMAFData_pushButton.setEnabled(True)
 
     def saveButtonAction(self):
@@ -623,10 +617,9 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         newMasterDict[topNodeShort] = self.loadedData
         newMasterDict['_init'] = self.loadedInit
 
-        self.saveNewMAF(savePath,newMasterDict)
+        self.saveNewMAF(savePath, newMasterDict)
 
-
-    def saveNewMAF(self,dataFile,data):
+    def saveNewMAF(self, dataFile, data):
         """ Saves/Overwrites an .animMAF file.
 
         :param dataFile: The .animMaf file to save to.
@@ -636,7 +629,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         with open(dataFile, 'w') as file:
             data = json.dump(data, file)
 
-    def loadedListPopulate(self,ctlList):
+    def loadedListPopulate(self, ctlList):
         """ Adds the passed controller list into the UI.
 
         :param ctlList: List of controllers to display.
@@ -652,7 +645,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
         """
         oldObj = self.UI.loadedMAF_listWidget.currentItem().text()
         newObj = self.UI.replaceMAFData_lineEdit.text()
-        newData, ctlList = self.ExImFuncs.replaceTarget(self.loadedData,oldObj,newObj)
+        newData, ctlList = self.ExImFuncs.replaceTarget(self.loadedData, oldObj, newObj)
         self.UI.replaceMAFData_lineEdit.clear()
         self.loadedData = newData
         self.loadedListPopulate(ctlList)
@@ -673,6 +666,7 @@ class cmmAnimExportToolUI(QtGui.QDialog, ExImFuncs):
             else:
                 self.UI.curDirContents_listWidget.clear()
                 self.UI.curDirContents_listWidget.addItem("-None-")
+
 
 def run():
     """ Run the UI.

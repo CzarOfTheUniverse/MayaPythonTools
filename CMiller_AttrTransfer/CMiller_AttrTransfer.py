@@ -24,8 +24,7 @@ myDir = os.path.dirname(os.path.abspath(__file__))
 myFile = os.path.join(myDir, 'CMiller_AttrTransfer.ui')
 
 
-
-def cmmConnectChannels(source="",dest=[], sourceAttr=""):
+def cmmConnectChannels(source="", dest=[], sourceAttr=""):
     """ Can connect attributes between two objects using Channel Box selection.
 
     :param source: The Object that will control the others.
@@ -59,16 +58,17 @@ def cmmMoveAttrProc(source, at=""):
     :param at: Attribute to move.
     :return: None
     """
-    bigP = cmds.attributeQuery(at,node=source,lp=1)
+    bigP = cmds.attributeQuery(at, node=source, lp=1)
     if bigP:
-        cmds.deleteAttr("%s.%s"%(source,bigP[0]))
+        cmds.deleteAttr("%s.%s" % (source, bigP[0]))
         cmds.undo()
     else:
-        lStat = cmds.getAttr("%s.%s"%(source,at),l=1)
-        cmds.setAttr("%s.%s"%(source,at),l=0)
-        cmds.deleteAttr("%s.%s"%(source,at))
+        lStat = cmds.getAttr("%s.%s" % (source, at), l=1)
+        cmds.setAttr("%s.%s" % (source, at), l=0)
+        cmds.deleteAttr("%s.%s" % (source, at))
         cmds.undo()
-        cmds.setAttr("%s.%s"%(source,at),l=lStat)
+        cmds.setAttr("%s.%s" % (source, at), l=lStat)
+
 
 def cmmMoveAttr(source, at, up=1):
     """ Moves an attribute up or down in the Channel Box.
@@ -80,50 +80,48 @@ def cmmMoveAttr(source, at, up=1):
     """
     ats = cmds.listAttr(source, ud=1)
     ind = ats.index(at)
-    if up==1:
-        if ind==0:
+    if up == 1:
+        if ind == 0:
             return
         else:
             moveNum = -1
-            for i,at in enumerate(ats):
-                if i==ind+moveNum:
-                    cmmMoveAttrProc(source,at)
+            for i, at in enumerate(ats):
+                if i == ind + moveNum:
+                    cmmMoveAttrProc(source, at)
 
-            for i,at in enumerate(ats):
-                if i>ind:
-                    cmmMoveAttrProc(source,at)
+            for i, at in enumerate(ats):
+                if i > ind:
+                    cmmMoveAttrProc(source, at)
 
-            #ats = cmds.listAttr(source, ud=1)
-            #ind2 = ats.index(at)
-            #if ind2==ind:
-            #    cmmMoveAttr(source, at, up=1)
+                    # ats = cmds.listAttr(source, ud=1)
+                    # ind2 = ats.index(at)
+                    # if ind2==ind:
+                    #    cmmMoveAttr(source, at, up=1)
 
 
     else:
-        if ind == len(ats)-1:
+        if ind == len(ats) - 1:
             return
         else:
             moveNum = 1
-            for i,at in enumerate(ats):
-                if i==ind:
-                    cmmMoveAttrProc(source,at)
-            for i,at in enumerate(ats):
-                if i>ind+moveNum:
-                    parents  = cmds.attributeQuery(at,node=source,lp=1)
+            for i, at in enumerate(ats):
+                if i == ind:
+                    cmmMoveAttrProc(source, at)
+            for i, at in enumerate(ats):
+                if i > ind + moveNum:
+                    parents = cmds.attributeQuery(at, node=source, lp=1)
                     if parents:
-                        cmmMoveAttrProc(source,parents[0])
+                        cmmMoveAttrProc(source, parents[0])
                     else:
-                        cmmMoveAttrProc(source,at)
+                        cmmMoveAttrProc(source, at)
 
-            #ats = cmds.listAttr(source, ud=1)
-            #ind2 = ats.index(at)
-            #if ind2==ind:
-            #    cmmMoveAttr(source, at, up=0)
-
-
+                        # ats = cmds.listAttr(source, ud=1)
+                        # ind2 = ats.index(at)
+                        # if ind2==ind:
+                        #    cmmMoveAttr(source, at, up=0)
 
 
-def cmmTransferAttr(source="",dest=[],delFromSource=0, customAttrs=[]):
+def cmmTransferAttr(source="", dest=[], delFromSource=0, customAttrs=[]):
     """ Transfers attributes between objects. Can either clone attributes to multiple objects,
      or move attributes to a single object including the attribute's connections.
 
@@ -141,70 +139,64 @@ def cmmTransferAttr(source="",dest=[],delFromSource=0, customAttrs=[]):
 
     for de in dest:
         for ca in customAttrs:
-            if cmds.attributeQuery(ca,node=source,ex=1):
-                attrType = cmds.getAttr("%s.%s"%(source,ca),typ=1)
-                attrVal = cmds.getAttr("%s.%s"%(source,ca))
-                attrConns = cmds.listConnections("%s.%s"%(source,ca),p=1)
-                attrKeyable = cmds.getAttr("%s.%s"%(source,ca),k=1)
-                attrCB = cmds.getAttr("%s.%s"%(source,ca),cb=1)
-                attrLock = cmds.getAttr("%s.%s"%(source,ca),l=1)
+            if cmds.attributeQuery(ca, node=source, ex=1):
+                attrType = cmds.getAttr("%s.%s" % (source, ca), typ=1)
+                attrVal = cmds.getAttr("%s.%s" % (source, ca))
+                attrConns = cmds.listConnections("%s.%s" % (source, ca), p=1)
+                attrKeyable = cmds.getAttr("%s.%s" % (source, ca), k=1)
+                attrCB = cmds.getAttr("%s.%s" % (source, ca), cb=1)
+                attrLock = cmds.getAttr("%s.%s" % (source, ca), l=1)
 
-                parents  = cmds.attributeQuery(ca,node=source,lp=1)
-                kids = cmds.attributeQuery(ca,node=source,lc=1)
+                parents = cmds.attributeQuery(ca, node=source, lp=1)
+                kids = cmds.attributeQuery(ca, node=source, lc=1)
 
                 print attrType
 
                 if parents:
                     pass
                 else:
-                    if not cmds.attributeQuery(ca,node=de,ex=1):
+                    if not cmds.attributeQuery(ca, node=de, ex=1):
                         if kids:
-                            cmds.addAttr(de,ln=ca,at=attrType,k=attrKeyable)
+                            cmds.addAttr(de, ln=ca, at=attrType, k=attrKeyable)
                             for child in kids:
-                                atKid = cmds.getAttr("%s.%s"%(source,child),typ=1)
-                                cmds.addAttr(de,ln=child, attributeType=atKid, parent=ca, k=attrKeyable )
+                                atKid = cmds.getAttr("%s.%s" % (source, child), typ=1)
+                                cmds.addAttr(de, ln=child, attributeType=atKid, parent=ca, k=attrKeyable)
                             for child in kids:
-                                atValKid = cmds.getAttr("%s.%s"%(source,child))
-                                cmds.setAttr("%s.%s"%(de,child),atValKid,l=attrLock)
-                        elif attrType=='enum':
-                            enumList = cmds.attributeQuery(ca,node=source,le=1)[0]
-                            cmds.addAttr(de,ln=ca,at=attrType,en=enumList,k=attrKeyable)
-                            cmds.setAttr("%s.%s"%(de,ca),attrVal,l=attrLock)
-                        elif attrType in ["double","float","long"]:
-                            cmds.addAttr(de,ln=ca,at=attrType,k=attrKeyable)
-                            cmds.setAttr("%s.%s"%(de,ca),attrVal,l=attrLock)
-                            if cmds.attributeQuery(ca,node=source,mxe=1):
-                                attrMax = cmds.attributeQuery(ca,node=source,max=1)[0]
-                                cmds.addAttr("%s.%s"%(de,ca),e=1,max=attrMax)
-                            if cmds.attributeQuery(ca,node=source,mne=1):
-                                attrMin = cmds.attributeQuery(ca,node=source,min=1)[0]
-                                cmds.addAttr("%s.%s"%(de,ca),e=1,min=attrMin)
-                        elif attrType=='string':
-                            cmds.addAttr(de,ln=ca,dt="string",k=attrKeyable)
+                                atValKid = cmds.getAttr("%s.%s" % (source, child))
+                                cmds.setAttr("%s.%s" % (de, child), atValKid, l=attrLock)
+                        elif attrType == 'enum':
+                            enumList = cmds.attributeQuery(ca, node=source, le=1)[0]
+                            cmds.addAttr(de, ln=ca, at=attrType, en=enumList, k=attrKeyable)
+                            cmds.setAttr("%s.%s" % (de, ca), attrVal, l=attrLock)
+                        elif attrType in ["double", "float", "long"]:
+                            cmds.addAttr(de, ln=ca, at=attrType, k=attrKeyable)
+                            cmds.setAttr("%s.%s" % (de, ca), attrVal, l=attrLock)
+                            if cmds.attributeQuery(ca, node=source, mxe=1):
+                                attrMax = cmds.attributeQuery(ca, node=source, max=1)[0]
+                                cmds.addAttr("%s.%s" % (de, ca), e=1, max=attrMax)
+                            if cmds.attributeQuery(ca, node=source, mne=1):
+                                attrMin = cmds.attributeQuery(ca, node=source, min=1)[0]
+                                cmds.addAttr("%s.%s" % (de, ca), e=1, min=attrMin)
+                        elif attrType == 'string':
+                            cmds.addAttr(de, ln=ca, dt="string", k=attrKeyable)
                             if attrVal:
-                                cmds.setAttr("%s.%s"%(de,ca),attrVal,type='string',l=attrLock)
-                        elif attrType=='bool':
-                            cmds.addAttr(de,ln=ca,at=attrType,k=attrKeyable)
-                            cmds.setAttr("%s.%s"%(de,ca),attrVal,l=attrLock)
+                                cmds.setAttr("%s.%s" % (de, ca), attrVal, type='string', l=attrLock)
+                        elif attrType == 'bool':
+                            cmds.addAttr(de, ln=ca, at=attrType, k=attrKeyable)
+                            cmds.setAttr("%s.%s" % (de, ca), attrVal, l=attrLock)
 
-
-
-
-                if attrKeyable==0:
-                    cmds.setAttr("%s.%s"%(de,ca),cb=attrCB)
-
+                if attrKeyable == 0:
+                    cmds.setAttr("%s.%s" % (de, ca), cb=attrCB)
 
                 if attrConns:
                     for conn in attrConns:
-                        cmds.connectAttr("%s.%s"%(de,ca),conn,f=1)
+                        cmds.connectAttr("%s.%s" % (de, ca), conn, f=1)
 
         if delFromSource:
             for ca in customAttrs:
-                if cmds.attributeQuery(ca,node=source,ex=1):
-                    cmds.setAttr("%s.%s"%(source,ca),l=0)
-                    cmds.deleteAttr("%s.%s"%(source,ca))
-
-
+                if cmds.attributeQuery(ca, node=source, ex=1):
+                    cmds.setAttr("%s.%s" % (source, ca), l=0)
+                    cmds.deleteAttr("%s.%s" % (source, ca))
 
 
 '''
@@ -218,6 +210,7 @@ class KeyPressEater(QtCore.QObject):
     """ I'm just fixing the stupid QT bugs in Maya where you lose focus with a modifier key.
 
     """
+
     def eventFilter(self, obj, event):
         """ Override the eventFilter to keep focus on windows by ignoring the first press of certain keys.
 
@@ -268,10 +261,8 @@ class CMiller_AttrTransfer(QtGui.QDialog):
         self.UI.moveUp_pushButton.clicked.connect(self.moveAttrs)
         self.UI.moveDown_pushButton.clicked.connect(self.moveAttrs)
 
-
         # Show the window
         self.UI.show()
-
 
     def loadNewSource(self):
         """ Loads a new source object into the UI.
@@ -286,11 +277,10 @@ class CMiller_AttrTransfer(QtGui.QDialog):
         self.UI.curSource_lineEdit.setText(sel)
 
         attrs = cmds.listAttr(sel, ud=1)
-        attrTypes = [cmds.getAttr("%s.%s"%(sel,attr),typ=1) for attr in attrs]
+        attrTypes = [cmds.getAttr("%s.%s" % (sel, attr), typ=1) for attr in attrs]
 
         self.UI.attrs_listWidget.addItems(attrs)
         self.UI.type_listWidget.addItems(attrTypes)
-
 
     def moveAttrs(self):
         """ Moves attributes based on UI button press.
@@ -300,10 +290,10 @@ class CMiller_AttrTransfer(QtGui.QDialog):
         sender = self.sender().objectName()
         s = cmds.ls(sl=1)[0]
         at = cmds.channelBox("mainChannelBox", q=1, sma=1)[0]
-        if sender=="moveUp_pushButton":
-           cmmMoveAttr(source=s,at=at,up=1)
-        elif sender=="moveDown_pushButton":
-           cmmMoveAttr(source=s,at=at,up=0)
+        if sender == "moveUp_pushButton":
+            cmmMoveAttr(source=s, at=at, up=1)
+        elif sender == "moveDown_pushButton":
+            cmmMoveAttr(source=s, at=at, up=0)
 
         self.loadNewSource()
 
@@ -325,10 +315,9 @@ class CMiller_AttrTransfer(QtGui.QDialog):
         if selectedAttrs:
             attrsToSend = [i.text() for i in selectedAttrs]
         else:
-            attrsToSend=None
+            attrsToSend = None
 
-
-        cmmTransferAttr(source=src,dest=dst,delFromSource=delVal,customAttrs=attrsToSend)
+        cmmTransferAttr(source=src, dest=dst, delFromSource=delVal, customAttrs=attrsToSend)
 
 
 def run():
