@@ -15,13 +15,10 @@ v.1 Initial Release to copy and transfer attributes.
 
 """
 
-
 from maya import OpenMayaUI as omUI, cmds, mel
 from PySide import QtGui, QtCore, QtUiTools
 from shiboken import wrapInstance
-import sys,os
-
-sys.path.append(r"R:\Pipeline\Tools\Maya\Scripts\python")
+import os
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 myFile = os.path.join(myDir, 'CMiller_AttrTransfer.ui')
