@@ -10,7 +10,7 @@ Written and maintained by Christopher M. Miller
 
 
 
-
+v.2 Added Channel Box functionality
 v.1 Initial Release to copy and transfer attributes.
 
 """
@@ -29,7 +29,13 @@ myFile = os.path.join(myDir, 'CMiller_AttrTransfer.ui')
 
 
 def cmmConnectChannels(source="",dest=[], sourceAttr=""):
+    """ Can connect attributes between two objects using Channel Box selection.
 
+    :param source: The Object that will control the others.
+    :param dest: A list of objects to be controlled.
+    :param sourceAttr: Optional argument to specify an attribute, otherwise Channel Box selection is used.
+    :return: None
+    """
     if not source:
         source = cmds.ls(sl=1)[0]
     if not dest:
@@ -50,7 +56,12 @@ def cmmConnectChannels(source="",dest=[], sourceAttr=""):
 
 
 def cmmMoveAttrProc(source, at=""):
+    """ Function for moving a single attribute to the bottom.
 
+    :param source: Object to affect.
+    :param at: Attribute to move.
+    :return: None
+    """
     bigP = cmds.attributeQuery(at,node=source,lp=1)
     if bigP:
         cmds.deleteAttr("%s.%s"%(source,bigP[0]))
@@ -63,6 +74,13 @@ def cmmMoveAttrProc(source, at=""):
         cmds.setAttr("%s.%s"%(source,at),l=lStat)
 
 def cmmMoveAttr(source, at, up=1):
+    """ Moves an attribute up or down in the Channel Box.
+
+    :param source: Object to affect.
+    :param at: Attribute to move.
+    :param up: Moves attribute up (1) or down (0)
+    :return: None
+    """
     ats = cmds.listAttr(source, ud=1)
     ind = ats.index(at)
     if up==1:
@@ -109,7 +127,15 @@ def cmmMoveAttr(source, at, up=1):
 
 
 def cmmTransferAttr(source="",dest=[],delFromSource=0, customAttrs=[]):
+    """ Transfers attributes between objects. Can either clone attributes to multiple objects,
+     or move attributes to a single object including the attribute's connections.
 
+    :param source: Object that has the attribute(s) currently.
+    :param dest: List of object(s) to transfer attribute(s) to.
+    :param delFromSource: Boolean. Whether to "move" the attribute, including the connections.
+    :param customAttrs: List of attribute(s) to be transferred.
+    :return: None
+    """
     if not dest:
         dest = cmds.ls(sl=1)
 
@@ -192,7 +218,13 @@ def cmmTransferAttr(source="",dest=[],delFromSource=0, customAttrs=[]):
 
 
 class KeyPressEater(QtCore.QObject):
+    """ I'm just fixing the stupid QT bugs in Maya where you lose focus with a modifier key.
+
+    """
     def eventFilter(self, obj, event):
+        """ Override the eventFilter to keep focus on windows by ignoring the first press of certain keys.
+
+        """
         if event.type() == QtCore.QEvent.KeyPress:
             # Filter out Shift, Control, Alt
             if event.key() in [QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Alt, QtCore.Qt.Key_CapsLock,
@@ -204,12 +236,17 @@ class KeyPressEater(QtCore.QObject):
 
 
 def addFilter(ui):
+    """ Push the event filter into the UI.
+
+    """
     keyPressEater = KeyPressEater(ui)
     ui.installEventFilter(keyPressEater)
 
 
 def getMayaWindow():
-    """Return Maya main window"""
+    """ Return Maya's main window.
+
+    """
     ptr = omUI.MQtUtil.mainWindow()
     if ptr is not None:
         return wrapInstance(long(ptr), QtGui.QMainWindow)
@@ -217,7 +254,9 @@ def getMayaWindow():
 
 class CMiller_AttrTransfer(QtGui.QDialog):
     def __init__(self, parent=getMayaWindow()):
-        """Initialize the class, load the UI file"""
+        """Initialize the class, load the UI file.
+
+        """
         super(CMiller_AttrTransfer, self).__init__(parent)
         self.loader = QtUiTools.QUiLoader(self)
         self.UI = self.loader.load(myFile, self)
@@ -238,6 +277,10 @@ class CMiller_AttrTransfer(QtGui.QDialog):
 
 
     def loadNewSource(self):
+        """ Loads a new source object into the UI.
+
+        :return: None
+        """
 
         self.UI.attrs_listWidget.clear()
         self.UI.type_listWidget.clear()
@@ -253,9 +296,11 @@ class CMiller_AttrTransfer(QtGui.QDialog):
 
 
     def moveAttrs(self):
+        """ Moves attributes based on UI button press.
 
+        :return: None
+        """
         sender = self.sender().objectName()
-        print sender
         s = cmds.ls(sl=1)[0]
         at = cmds.channelBox("mainChannelBox", q=1, sma=1)[0]
         if sender=="moveUp_pushButton":
@@ -266,10 +311,16 @@ class CMiller_AttrTransfer(QtGui.QDialog):
         self.loadNewSource()
 
     def connectChannels(self):
+        """ GUI command variant of cmmConnectChannels.
 
+        """
         cmmConnectChannels()
 
     def transferAttrs(self):
+        """ Transfers attributes based on UI selections.
+
+        :return: None
+        """
         src = self.UI.curSource_lineEdit.text()
         delVal = self.UI.delete_checkBox.isChecked()
         dst = cmds.ls(sl=1)
@@ -284,7 +335,9 @@ class CMiller_AttrTransfer(QtGui.QDialog):
 
 
 def run():
-    """Run the UI"""
+    """ Run the UI.
+
+    """
     global CMiller_AttrTransferWin
     try:
         CMiller_AttrTransferWin.close()
