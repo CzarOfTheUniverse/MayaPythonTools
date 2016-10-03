@@ -253,18 +253,6 @@ class CMiller_RiggingToolsFuncs(object):
         if cmds.listRelatives(endJoint, p=1, type="joint")[0] == baseJoint:
             cmds.parent(endJoint, nj)
 
-    def cmmCreateJoint(self):
-        """ Select components or objects to create joints at.
-
-        :return: None
-        """
-        selList = cmds.ls(os=1)
-        for item in selList:
-            if not CMiller_RiggingToolsWin.UI.createJoints_cb.isChecked():
-                cmds.select(d=1)
-            iTrans = cmds.xform(item, q=1, t=1, ws=1)
-            cmds.joint(p=iTrans, radius=.5)
-
     def connectChannels(self):
         """ Connects two selected objects via highlighted Channel Box attributes.
 
@@ -705,6 +693,17 @@ class CMiller_RiggingToolsFuncs(object):
     #
     ##########################
 
+    def cmmCreateJoint(self):
+        """ Select components or objects to create joints at.
+
+        :return: None
+        """
+        selList = cmds.ls(os=1)
+        for item in selList:
+            if not CMiller_RiggingToolsWin.UI.createJoints_cb.isChecked():
+                cmds.select(d=1)
+            iTrans = cmds.xform(item, q=1, t=1, ws=1)
+            cmds.joint(p=iTrans, radius=.5)
 
     def cmmIconSaver(self):
         """ Saves custom drawn controller icons to an ICONFILE.
