@@ -16,8 +16,6 @@ v.1 Initial Release to transfer weight values as command line.
 
 """
 
-
-
 import maya.OpenMaya as om
 import maya.OpenMayaAnim as omAnim
 from maya import cmds
