@@ -8,7 +8,6 @@ Additionally allows weight transfer via selected vertices.
 Written and maintained by Christopher M. Miller
 
 
-
 v.1 Initial Release to transfer weight values as command line.
 
 -- To Do --
@@ -16,11 +15,8 @@ v.1 Initial Release to transfer weight values as command line.
 
 """
 
-import maya.OpenMaya as om
 import maya.OpenMayaAnim as omAnim
-from maya import cmds
 
-def weightJumper(skin,jointSource="",jointTarget="",selVerts=False):
     """
 
     :param skin: The skinCluster to affect.
@@ -98,7 +94,6 @@ def weightJumper(skin,jointSource="",jointTarget="",selVerts=False):
     skinClusterNode.getWeights(skinPath,finalComponents,myInflArray,jointDestWeights)
 
     jointTargetFinalWeights = om.MDoubleArray(len(jointDestWeights))
-    bigOldWeightList = [x + y for x, y in zip(jointSourceWeights, jointDestWeights)]
 
     for i in xrange(len(jointDestWeights)):
         jointTargetFinalWeights.set(bigOldWeightList[i],i)
@@ -109,4 +104,3 @@ def weightJumper(skin,jointSource="",jointTarget="",selVerts=False):
     skinClusterNode.setWeights(skinPath,finalComponents,myInflArray,jointTargetFinalWeights,False)
     skinClusterNode.setWeights(skinPath,finalComponents,myOtherInflArray,jointSourceNewWeights,False)
 
-    cmds.setAttr("%s.normalizeWeights"%skin,normalVal)
