@@ -127,7 +127,7 @@ def weightJumper(skin,jointSource="",jointTarget="",selVerts=False, percent=100)
     cmds.setAttr("%s.normalizeWeights"%skin,normalVal)
     
     
-def weightMirror(skin):
+def weightMirror(skin, dir='-X'):
 
     normalVal = cmds.getAttr("%s.normalizeWeights"%skin)
     #print normalVal
@@ -190,10 +190,16 @@ def weightMirror(skin):
         #print i, pos
 
         #pos x
-        if p0>0:
-            mirrorFromList[i] = pos
-        elif p0<0:
-            mirrorToList[i] = pos
+        if dir=='-X':
+            if p0>0:
+                mirrorFromList[i] = pos
+            elif p0<0:
+                mirrorToList[i] = pos
+        elif dir=='+X':
+            if p0<0:
+                mirrorFromList[i] = pos
+            elif p0>0:
+                mirrorToList[i] = pos
         else:
             mirrorStayList[i] = pos
 
@@ -229,20 +235,33 @@ def weightMirror(skin):
     jntDestList = {}
     for i,n in enumerate(infNames):
         #print n
-        if "L_" in n:
-            jntSourceList[i] = n
-            #print "Found the L"
-        elif "R_" in n:
-            jntDestList[i] = n
-            #print "Found the R"
+        if dir=='-X':
+            if "L_" in n:
+                jntSourceList[i] = n
+                #print "Found the L"
+            elif "R_" in n:
+                jntDestList[i] = n
+                #print "Found the R"
+        elif dir=='+X':
+            if "R_" in n:
+                jntSourceList[i] = n
+                #print "Found the R"
+            elif "L_" in n:
+                jntDestList[i] = n
+                #print "Found the L"
     
     switchDict = {}
     for si,sj in jntSourceList.items():
         for di,dj in jntDestList.items():
-            if sj.replace("L_","") == dj.replace("R_",""):
-                print "matched %s to %s" % (sj, dj)
+            if dir=='-X':
+                if sj.replace("L_","") == dj.replace("R_",""):
+                    print "matched %s to %s" % (sj, dj)
+                    switchDict[si] = di
+            elif dir=='+X':
+                if sj.replace("R_","") == dj.replace("L_",""):
+                    print "matched %s to %s" % (sj, dj)
+                    switchDict[si] = di
 
-                switchDict[si] = di
 
     #print switchDict
 
@@ -260,27 +279,27 @@ def weightMirror(skin):
             wgts.set(postW,tempNum)
         #print postWeight
     #print wgts
-    
+
     for ss in mirrorStayList.keys():
         index = ss*numInfs
         startWeight = wgts[ss*numInfs:ss*numInfs+numInfs]
-        
+
         postWeight = startWeight
-        
+
         for kk,vv in switchDict.items():
-            
+
             postWeight[kk] = startWeight[vv]
 
         #Here we're going to manually normalize the weights
         maxVal = sum(postWeight)
         postWeightN = [p/maxVal for p in postWeight]
-        
+
         for ll,postW in enumerate(postWeightN):
             tempNum = ll+index
             wgts.set(postW,tempNum)
 
     #print wgts
-    
+
     infIndices = om.MIntArray(numInfs)
     for ii in range(numInfs):
         infIndices.set(ii, ii)
@@ -289,10 +308,10 @@ def weightMirror(skin):
 
     cmds.setAttr("%s.normalizeWeights"%skin,normalVal)
     cmds.setAttr("%s.envelope"%skin,1)
-    
+
     #cmds.skinCluster("Shirt_02_Driver_skinCluster",e=1,fnw=1)
-    
-    
+
+
 
 
 
@@ -313,9 +332,9 @@ def weightMirrorMultiObject(skin1,skin2):
     selectionList2.add( skin2 )
     node2 = om.MObject()
     selectionList2.getDependNode( 0, node2 )
-    skinClusterNode2 = omAnim.MFnSkinCluster(node2)    
-    
-    
+    skinClusterNode2 = omAnim.MFnSkinCluster(node2)
+
+
     # Use magic to find the components
     mfnSet1 = om.MFnSet(skinClusterNode1.deformerSet())
     mfnSetMembers1 = om.MSelectionList()
@@ -323,27 +342,27 @@ def weightMirrorMultiObject(skin1,skin2):
     dgPath1 = om.MDagPath()
     components1 = om.MObject()
     mfnSetMembers1.getDagPath(0, dgPath1, components1)
-    
+
     # Use magic to find the components
     mfnSet2 = om.MFnSet(skinClusterNode2.deformerSet())
     mfnSetMembers2 = om.MSelectionList()
     mfnSet2.getMembers(mfnSetMembers2, False)
     dgPath2 = om.MDagPath()
     components2 = om.MObject()
-    mfnSetMembers2.getDagPath(0, dgPath2, components2)    
+    mfnSetMembers2.getDagPath(0, dgPath2, components2)
 
     # Get the number of influences that affect the skinCluster
     infs1 = om.MDagPathArray()
     numInfs1 = skinClusterNode1.influenceObjects(infs1)
-    
+
     # Get the number of influences that affect the skinCluster
     infs2 = om.MDagPathArray()
-    numInfs2 = skinClusterNode2.influenceObjects(infs2)    
+    numInfs2 = skinClusterNode2.influenceObjects(infs2)
 
-    
-    
-    
-    
+
+
+
+
     # Get dagPath for the skinCluster at index 0
     skinPath1 = om.MDagPath()
     index = 0
@@ -384,12 +403,12 @@ def weightMirrorMultiObject(skin1,skin2):
     inMfnMesh2.getPoints(inPointArray2, om.MSpace.kWorld)
     maxCount2 = inPointArray2.length()
 
-    geomIter2 = om.MItGeometry(dgPath2)    
-    
-    
-    
-    
-    
+    geomIter2 = om.MItGeometry(dgPath2)
+
+
+
+
+
     counter1=0
     counter2=0
     mirrorFromList = {}
@@ -436,11 +455,11 @@ def weightMirrorMultiObject(skin1,skin2):
 
         counter2+=1
         geomIter2.next()
-        
-        
-        
-        
-        
+
+
+
+
+
     matchSet = {}
 
     for ff,posF in mirrorFromList.items():
@@ -460,9 +479,9 @@ def weightMirrorMultiObject(skin1,skin2):
     infNames2 = []
     for i in range(infs2.length()):
         infName = infs2[i].partialPathName()
-        infNames2.append(infName)        
-        
-        
+        infNames2.append(infName)
+
+
     #print infNames
 
     jntSourceList = {}
@@ -483,16 +502,16 @@ def weightMirrorMultiObject(skin1,skin2):
         elif "R_" in n:
             jntDestList[i] = n
             #print "Found the R"
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
     switchDict = {}
     for si,sj in jntSourceList.items():
         for di,dj in jntDestList.items():
@@ -517,27 +536,27 @@ def weightMirrorMultiObject(skin1,skin2):
             wgts2.set(postW,tempNum)
         #print postWeight
     #print wgts
-    
+
     for ss in mirrorStayList.keys():
         index = ss*numInfs2
         startWeight = wgts2[ss*numInfs2:ss*numInfs+numInfs2]
-        
+
         postWeight = startWeight
-        
+
         for kk,vv in switchDict.items():
-            
+
             postWeight[kk] = startWeight[vv]
 
         #Here we're going to manually normalize the weights
         maxVal = sum(postWeight)
         postWeightN = [p/maxVal for p in postWeight]
-        
+
         for ll,postW in enumerate(postWeightN):
             tempNum = ll+index
             wgts2.set(postW,tempNum)
 
     #print wgts
-    
+
     infIndices = om.MIntArray(numInfs2)
     for ii in range(numInfs2):
         infIndices.set(ii, ii)
@@ -545,12 +564,12 @@ def weightMirrorMultiObject(skin1,skin2):
     skinClusterNode2.setWeights(dgPath2, components2, infIndices, wgts2, False)
 
     cmds.setAttr("%s.normalizeWeights"%skin2,normalVal)
-    
-    #cmds.skinCluster("Shirt_02_Driver_skinCluster",e=1,fnw=1)
-    
 
-    
-    
+    #cmds.skinCluster("Shirt_02_Driver_skinCluster",e=1,fnw=1)
+
+
+
+
 '''
 ################################################
                                 ~User Interface~
@@ -659,7 +678,8 @@ class CMiller_WeightJumper(QtGui.QDialog):
     def mirrorWeights(self):
 
         skn = [a.text() for a in self.UI.skinCluster_listWidget.selectedItems()][0]
-        weightMirror(skn)
+        dir = self.UI.mirrorWeightsDir_comboBox.currentText()[-2:]
+        weightMirror(skn,dir)
 
 
 def run():

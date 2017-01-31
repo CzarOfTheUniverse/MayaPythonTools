@@ -27,7 +27,7 @@
        <number>2</number>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_1">
        <property name="geometry">
@@ -137,16 +137,6 @@
         <item row="0" column="2">
          <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Vertex Positional Offset Tolerance Threshold</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QLineEdit" name="sourceMesh_lineEdit">
           <property name="enabled">
@@ -157,6 +147,13 @@
           </property>
           <property name="focusPolicy">
            <enum>Qt::StrongFocus</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="2">
+         <widget class="QPushButton" name="loadSourceMesh_pushButton">
+          <property name="text">
+           <string>Source Mesh</string>
           </property>
          </widget>
         </item>
@@ -176,18 +173,35 @@
           </property>
          </spacer>
         </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QPushButton" name="loadSourceMesh_pushButton">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Source Mesh</string>
+           <string>Vertex Positional Offset Tolerance Threshold</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="3">
+        <item row="3" column="0">
          <widget class="QPushButton" name="mirrorWeights_pushButton">
           <property name="text">
            <string>Mirror Weights!</string>
           </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="2">
+         <widget class="QComboBox" name="mirrorWeightsDir_comboBox">
+          <item>
+           <property name="text">
+            <string>+X  to  -X</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>-X  to  +X</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
