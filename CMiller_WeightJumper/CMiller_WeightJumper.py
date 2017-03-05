@@ -216,10 +216,12 @@ def weightMirror(skin, dir='-X', tol=0.0):
         for tt,posT in mirrorToList.items():
             if [abs(posF[0]),posF[1],posF[2]] == [abs(posT[0]),posT[1],posT[2]]:
                 matchSet[ff] = tt
+                mirrorToList.pop(tt)
             else:
                 if tol>0.0:
                     if abs(posT[0])-tol<abs(posF[0])<abs(posT[0])+tol:
                         matchSet[ff] = tt
+                        mirrorToList.pop(tt)
     for ss,posS in mirrorStayList.items():
         matchSet[ss] = ss
 
@@ -261,10 +263,12 @@ def weightMirror(skin, dir='-X', tol=0.0):
                 if sj.replace("L_","") == dj.replace("R_",""):
                     print "matched %s to %s" % (sj, dj)
                     switchDict[si] = di
+                    jntDestList.pop(di)
             elif dir=='+X':
                 if sj.replace("R_","") == dj.replace("L_",""):
                     print "matched %s to %s" % (sj, dj)
                     switchDict[si] = di
+                    jntDestList.pop(di)
 
 
     #print switchDict
