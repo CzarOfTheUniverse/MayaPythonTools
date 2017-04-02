@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>499</width>
+    <width>337</width>
     <height>502</height>
    </rect>
   </property>
@@ -15,6 +15,27 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Skin Cluster To Affect (If Multiple Exist, Select One Below):</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QListWidget" name="skinCluster_listWidget">
+      <property name="toolTip">
+       <string>The selected skinCluster node is the one that will be affected by the above functions.</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QToolBox" name="toolBox">
       <property name="frameShape">
@@ -34,7 +55,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>481</width>
+         <width>319</width>
          <height>171</height>
         </rect>
        </property>
@@ -58,7 +79,7 @@
         <item row="0" column="0">
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>Percentage of Weights to Transfer</string>
+           <string>Percentage to Transfer</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -126,7 +147,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>481</width>
+         <width>319</width>
          <height>171</height>
         </rect>
        </property>
@@ -134,68 +155,39 @@
         <string>Weight Mirror</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="2">
-         <widget class="QDoubleSpinBox" name="tolerance_doubleSpinBox">
-          <property name="singleStep">
-           <double>0.010000000000000</double>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>1.</string>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLineEdit" name="sourceMesh_lineEdit">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="mouseTracking">
-           <bool>false</bool>
-          </property>
-          <property name="focusPolicy">
-           <enum>Qt::StrongFocus</enum>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>2.</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QPushButton" name="loadSourceMesh_pushButton">
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_7">
           <property name="text">
-           <string>Source Mesh</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Vertex Positional Offset Tolerance Threshold</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <string>3.</string>
           </property>
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QPushButton" name="mirrorWeights_pushButton">
+         <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>Mirror Weights!</string>
+           <string>4.</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="2">
+        <item row="3" column="1">
          <widget class="QComboBox" name="mirrorWeightsDir_comboBox">
+          <property name="toolTip">
+           <string>Direction to mirror in. Currently only the X axis is supported.</string>
+          </property>
           <item>
            <property name="text">
             <string>+X  to  -X</string>
@@ -208,25 +200,105 @@
           </item>
          </widget>
         </item>
+        <item row="3" column="2" colspan="4">
+         <widget class="QPushButton" name="mirrorWeights_pushButton">
+          <property name="toolTip">
+           <string>Mirrors the weights using the selected options. **Undo is not currently supported.**</string>
+          </property>
+          <property name="text">
+           <string>Mirror Weights!</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="5">
+         <widget class="QDoubleSpinBox" name="tolerance_doubleSpinBox">
+          <property name="toolTip">
+           <string>If your mesh is slightly asymmetrical, you can increase this value to have source verts &quot;search&quot; around the mirrored location. Keep in mind this will cause the matching process to take longer.</string>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="5">
+         <widget class="QLineEdit" name="naming_lineEdit">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::StrongFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>Enter the identifier for each side, separated by a colon. Common examples are L_:R_, _l:_r, etc</string>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="whatsThis">
+           <string/>
+          </property>
+          <property name="text">
+           <string>L_:R_</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="4">
+         <widget class="QLabel" name="label_4">
+          <property name="toolTip">
+           <string>Enter the identifier for each side, separated by a colon. Common examples are L_:R_, _l:_r, etc</string>
+          </property>
+          <property name="text">
+           <string>Naming Convention for Left:Right</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" colspan="4">
+         <widget class="QLabel" name="label_3">
+          <property name="toolTip">
+           <string>If your mesh is slightly asymmetrical, you can increase this value to have source verts &quot;search&quot; around the mirrored location. Keep in mind this will cause the matching process to take longer.</string>
+          </property>
+          <property name="text">
+           <string>Vertex Offset Threshold (Slower)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QPushButton" name="loadSourceMesh_pushButton">
+          <property name="toolTip">
+           <string>Type the name or use the button to load the selected mesh as the source. Available skinClusters will appear below.</string>
+          </property>
+          <property name="text">
+           <string>Load Source Mesh</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="4">
+         <widget class="QLineEdit" name="sourceMesh_lineEdit">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::StrongFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>Type the name or use the button to load the selected mesh as the source. Available skinClusters will appear below.</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Skin Cluster To Affect (If Multiple Exist, Select One Below):</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QListWidget" name="skinCluster_listWidget"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
      </widget>
     </item>
    </layout>

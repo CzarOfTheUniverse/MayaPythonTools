@@ -127,7 +127,7 @@ def weightJumper(skin,jointSource="",jointTarget="",selVerts=False, percent=100)
     cmds.setAttr("%s.normalizeWeights"%skin,normalVal)
     
     
-def weightMirror(skin, dir='-X', tol=0.0):
+def weightMirror(skin, dir='-X', tol=0.0, syntax="L_:R_"):
 
     normalVal = cmds.getAttr("%s.normalizeWeights"%skin)
     #print normalVal
@@ -242,17 +242,17 @@ def weightMirror(skin, dir='-X', tol=0.0):
     for i,n in enumerate(infNames):
         #print n
         if dir=='-X':
-            if "L_" in n:
+            if syntax.split(":")[0] in n:
                 jntSourceList[i] = n
                 #print "Found the L"
-            elif "R_" in n:
+            elif syntax.split(":")[1] in n:
                 jntDestList[i] = n
                 #print "Found the R"
         elif dir=='+X':
-            if "R_" in n:
+            if syntax.split(":")[1] in n:
                 jntSourceList[i] = n
                 #print "Found the R"
-            elif "L_" in n:
+            elif syntax.split(":")[0] in n:
                 jntDestList[i] = n
                 #print "Found the L"
     
@@ -260,13 +260,13 @@ def weightMirror(skin, dir='-X', tol=0.0):
     for si,sj in jntSourceList.items():
         for di,dj in jntDestList.items():
             if dir=='-X':
-                if sj.replace("L_","") == dj.replace("R_",""):
-                    print "matched %s to %s" % (sj, dj)
+                if sj.replace(syntax.split(":")[0],"") == dj.replace(syntax.split(":")[1],""):
+                    #print "matched %s to %s" % (sj, dj)
                     switchDict[si] = di
                     jntDestList.pop(di)
             elif dir=='+X':
-                if sj.replace("R_","") == dj.replace("L_",""):
-                    print "matched %s to %s" % (sj, dj)
+                if sj.replace(syntax.split(":")[1],"") == dj.replace(syntax.split(":")[0],""):
+                    #print "matched %s to %s" % (sj, dj)
                     switchDict[si] = di
                     jntDestList.pop(di)
 
@@ -318,6 +318,8 @@ def weightMirror(skin, dir='-X', tol=0.0):
     cmds.setAttr("%s.envelope"%skin,1)
     
     #cmds.skinCluster("Shirt_02_Driver_skinCluster",e=1,fnw=1)
+
+    cmds.warning("Weight Mirroring Complete!")
     
     
 
@@ -474,6 +476,7 @@ def weightMirrorMultiObject(skin1,skin2):
         for tt,posT in mirrorToList.items():
             if [abs(posF[0]),posF[1],posF[2]] == [abs(posT[0]),posT[1],posT[2]]:
                 matchSet[ff] = tt
+                mirrorToList.pop(tt)
     for ss,posS in mirrorStayList.items():
         matchSet[ss] = ss
 
@@ -527,6 +530,7 @@ def weightMirrorMultiObject(skin1,skin2):
                 print "matched %s to %s" % (sj, dj)
 
                 switchDict[si] = di
+                jntDestList.pop(di)
 
     print switchDict
 
@@ -688,7 +692,8 @@ class CMiller_WeightJumper(QtGui.QDialog):
         skn = [a.text() for a in self.UI.skinCluster_listWidget.selectedItems()][0]
         dir = self.UI.mirrorWeightsDir_comboBox.currentText()[-2:]
         tol = self.UI.tolerance_doubleSpinBox.value()
-        weightMirror(skn,dir,tol)
+        syn = self.UI.naming_lineEdit.text()
+        weightMirror(skn,dir,tol,syn)
 
 
 def run():
